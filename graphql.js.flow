@@ -43,7 +43,7 @@ import type { GraphQLSchema } from './type/schema';
 export function graphql(
   schema: GraphQLSchema,
   requestString: string,
-  rootValue?: mixed,
+  rootValue: Object,
   contextValue?: mixed,
   variableValues?: ?{[key: string]: mixed},
   operationName?: ?string

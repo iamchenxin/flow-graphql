@@ -467,7 +467,7 @@ export type GraphQLIsTypeOfFn = (
 ) => boolean
 
 export type GraphQLFieldResolveFn = (
-  source: mixed,
+  source: Object,
   args: {[argName: string]: mixed},
   context: mixed,
   info: GraphQLResolveInfo

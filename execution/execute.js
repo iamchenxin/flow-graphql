@@ -562,12 +562,12 @@ function completeValue(exeContext, returnType, fieldASTs, info, result) {
 
   // If field type is an abstract type, Interface or Union, determine the
   // runtime Object type and complete for that type.
-  if (returnType instanceof _definition.GraphQLInterfaceType || returnType instanceof _definition.GraphQLUnionType) {
+  if (result instanceof Object && (returnType instanceof _definition.GraphQLInterfaceType || returnType instanceof _definition.GraphQLUnionType)) {
     return completeAbstractValue(exeContext, returnType, fieldASTs, info, result);
   }
 
   // If field type is Object, execute and complete all sub-selections.
-  if (returnType instanceof _definition.GraphQLObjectType) {
+  if (returnType instanceof _definition.GraphQLObjectType && result instanceof Object) {
     return completeObjectValue(exeContext, returnType, fieldASTs, info, result);
   }
 

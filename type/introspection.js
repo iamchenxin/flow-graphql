@@ -188,7 +188,7 @@ var __Type = exports.__Type = new _definition.GraphQLObjectType({
           } else if (type instanceof _definition.GraphQLNonNull) {
             return TypeKind.NON_NULL;
           }
-          throw new Error('Unknown kind of type: ' + type);
+          throw new Error('Unknown kind of type: ' + type.toString());
         }
       },
       name: { type: _scalars.GraphQLString },
