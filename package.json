@@ -1,0 +1,79 @@
+{
+  "name": "flow-graphql",
+  "version": "0.5.2",
+  "description": "flow typed grapgql.",
+  "contributors": [
+    "Lee Byron <lee@leebyron.com> (http://leebyron.com/)",
+    "Nicholas Schrock <schrockn@fb.com>",
+    "Daniel Schafer <dschafer@fb.com>"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "homepage": "https://github.com/iamchenxin/flow-graphql",
+  "bugs": {
+    "url": "https://github.com/iamchenxin/flow-graphql/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamchenxin/flow-graphql.git"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "syntax-async-functions",
+      "transform-class-properties",
+      "transform-flow-strip-types",
+      "transform-object-rest-spread",
+      "transform-regenerator",
+      "transform-runtime"
+    ]
+  },
+  "scripts": {
+    "build": "babel src --ignore __tests__ --out-dir ./ && gulp flow"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "index.js.flow",
+    "graphql.js",
+    "graphql.js.flow",
+    "error/",
+    "execution/",
+    "jsutils/",
+    "language/",
+    "type/",
+    "utilities/",
+    "validation/"
+  ],
+  "dependencies": {
+    "babel-runtime": ">=6.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.6.5",
+    "babel-eslint": "^6.0.2",
+    "babel-plugin-syntax-async-functions": "^6.5.0",
+    "babel-plugin-transform-class-properties": "^6.6.0",
+    "babel-plugin-transform-flow-strip-types": "^6.7.0",
+    "babel-plugin-transform-object-rest-spread": "^6.6.5",
+    "babel-plugin-transform-regenerator": "^6.6.5",
+    "babel-plugin-transform-runtime": "^6.6.0",
+    "babel-preset-es2015": "6.6.0",
+    "babel-preset-fbjs": "^1.0.0",
+    "chai": "3.5.0",
+    "chai-subset": "1.2.2",
+    "coveralls": "2.11.9",
+    "eslint": "^2.7.0",
+    "eslint-plugin-babel": "3.2.0",
+    "flow-bin": "0.22.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "isparta": "4.0.0",
+    "mocha": "2.4.5",
+    "sane": "1.3.4"
+  }
+}
