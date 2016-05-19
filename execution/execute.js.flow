@@ -83,7 +83,7 @@ import type {
 type ExecutionContext = {
   schema: GraphQLSchema;
   fragments: {[key: string]: FragmentDefinition};
-  rootValue: mixed;
+  rootValue?: Object;
   contextValue: mixed;
   operation: OperationDefinition;
   variableValues: {[key: string]: mixed};
@@ -111,7 +111,7 @@ type ExecutionResult = {
 export function execute(
   schema: GraphQLSchema,
   documentAST: Document,
-  rootValue: Object,
+  rootValue?: Object,
   contextValue?: mixed,
   variableValues?: ?{[key: string]: mixed},
   operationName?: ?string
@@ -166,7 +166,7 @@ export function execute(
 function buildExecutionContext(
   schema: GraphQLSchema,
   documentAST: Document,
-  rootValue: mixed,
+  rootValue?: Object,
   contextValue: mixed,
   rawVariableValues: ?{[key: string]: mixed},
   operationName: ?string
@@ -226,7 +226,7 @@ function buildExecutionContext(
 function executeOperation(
   exeContext: ExecutionContext,
   operation: OperationDefinition,
-  rootValue: Object
+  rootValue?: Object
 ): Object {
   const type = getOperationRootType(exeContext.schema, operation);
   const fields = collectFields(
@@ -236,11 +236,11 @@ function executeOperation(
     Object.create(null),
     Object.create(null)
   );
-
+  const sourceValue = rootValue ? rootValue : {};
   if (operation.operation === 'mutation') {
-    return executeFieldsSerially(exeContext, type, rootValue, fields);
+    return executeFieldsSerially(exeContext, type, sourceValue, fields);
   }
-  return executeFields(exeContext, type, rootValue, fields);
+  return executeFields(exeContext, type, sourceValue, fields);
 }
 
 /**

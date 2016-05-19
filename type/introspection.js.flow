@@ -184,7 +184,11 @@ export const __Type = new GraphQLObjectType({
         } else if (type instanceof GraphQLNonNull) {
           return TypeKind.NON_NULL;
         }
-        throw new Error('Unknown kind of type: ' + type.toString());
+        let str = 'undefined';
+        if (type !== undefined) {
+          str = type.toString();
+        }
+        throw new Error('Unknown kind of type: ' + str);
       }
     },
     name: { type: GraphQLString },

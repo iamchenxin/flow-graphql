@@ -189,11 +189,11 @@ function buildExecutionContext(schema, documentAST, rootValue, contextValue, raw
 function executeOperation(exeContext, operation, rootValue) {
   var type = getOperationRootType(exeContext.schema, operation);
   var fields = collectFields(exeContext, type, operation.selectionSet, (0, _create2.default)(null), (0, _create2.default)(null));
-
+  var sourceValue = rootValue ? rootValue : {};
   if (operation.operation === 'mutation') {
-    return executeFieldsSerially(exeContext, type, rootValue, fields);
+    return executeFieldsSerially(exeContext, type, sourceValue, fields);
   }
-  return executeFields(exeContext, type, rootValue, fields);
+  return executeFields(exeContext, type, sourceValue, fields);
 }
 
 /**
