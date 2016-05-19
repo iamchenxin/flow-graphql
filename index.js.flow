@@ -196,3 +196,43 @@ export {
   // Asserts a string is a valid GraphQL name.
   assertValidName,
 } from './utilities';
+
+// Export types
+export type {
+  OperationDefinition,
+  Field,
+  FragmentDefinition,
+  Value,
+  GraphQLType,
+  GraphQLInputType,
+  GraphQLOutputType,
+  GraphQLLeafType,
+  GraphQLCompositeType,
+  GraphQLAbstractType,
+  GraphQLNullableType,
+  GraphQLNamedType,
+  GraphQLScalarTypeConfig,
+  GraphQLObjectTypeConfig,
+  GraphQLTypeResolveFn,
+  GraphQLIsTypeOfFn,
+  GraphQLFieldResolveFn,
+  GraphQLResolveInfo,
+  GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
+  GraphQLArgumentConfig,
+  GraphQLFieldConfigMap,
+  GraphQLFieldDefinition,
+  GraphQLArgument,
+  GraphQLFieldDefinitionMap,
+  GraphQLInterfaceTypeConfig,
+  GraphQLUnionTypeConfig,
+  GraphQLEnumTypeConfig,
+  GraphQLEnumValueConfigMap,
+  GraphQLEnumValueConfig,
+  GraphQLEnumValueDefinition,
+  InputObjectConfig,
+  InputObjectFieldConfig,
+  InputObjectConfigFieldMap,
+  InputObjectField,
+  InputObjectFieldMap
+} from './type';

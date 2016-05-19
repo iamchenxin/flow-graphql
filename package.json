@@ -1,6 +1,6 @@
 {
   "name": "flow-graphql",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "description": "flow typed grapgql v0.6.0",
   "contributors": [
     "Lee Byron <lee@leebyron.com> (http://leebyron.com/)",
