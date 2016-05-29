@@ -156,3 +156,4 @@ Object.defineProperty(exports, 'assertValidName', {
     return _assertValidName.assertValidName;
   }
 });
+//# sourceMappingURL=index.js.map

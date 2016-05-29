@@ -36,3 +36,4 @@ function keyValMap(list, keyFn, valFn) {
     return map[keyFn(item)] = valFn(item), map;
   }, {});
 }
+//# sourceMappingURL=keyValMap.js.map

@@ -22,7 +22,6 @@ var _kinds = require('./kinds');
  * Throws GraphQLError if a syntax error is encountered.
  */
 
-
 /**
  * Configuration options to control parser behavior
  */
@@ -147,7 +146,7 @@ function parseOperationDefinition(parser) {
     };
   }
   var operation = parseOperationType(parser);
-  var name = void 0;
+  var name = undefined;
   if (peek(parser, _lexer.TokenKind.NAME)) {
     name = parseName(parser);
   }
@@ -245,8 +244,8 @@ function parseField(parser) {
   var start = parser.token.start;
 
   var nameOrAlias = parseName(parser);
-  var alias = void 0;
-  var name = void 0;
+  var alias = undefined;
+  var name = undefined;
   if (skip(parser, _lexer.TokenKind.COLON)) {
     alias = nameOrAlias;
     name = parseName(parser);
@@ -512,7 +511,7 @@ function parseDirective(parser) {
  */
 function parseType(parser) {
   var start = parser.token.start;
-  var type = void 0;
+  var type = undefined;
   if (skip(parser, _lexer.TokenKind.BRACKET_L)) {
     type = parseType(parser);
     expect(parser, _lexer.TokenKind.BRACKET_R);
@@ -1000,3 +999,4 @@ function many(parser, openKind, parseFn, closeKind) {
   }
   return nodes;
 }
+//# sourceMappingURL=parser.js.map

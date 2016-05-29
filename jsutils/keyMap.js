@@ -42,3 +42,4 @@ function keyMap(list, keyFn) {
     return map[keyFn(item)] = item, map;
   }, {});
 }
+//# sourceMappingURL=keyMap.js.map

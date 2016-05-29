@@ -5,7 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.concatAST = concatAST;
 
-
 /**
  * Provided a collection of ASTs, presumably each from different files,
  * concatenate the ASTs together into batched AST, useful for validating many
@@ -32,3 +31,4 @@ function concatAST(asts) {
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
+//# sourceMappingURL=concatAST.js.map

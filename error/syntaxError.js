@@ -46,3 +46,4 @@ function highlightSourceAtLocation(source, location) {
 function lpad(len, str) {
   return Array(len - str.length + 1).join(' ') + str;
 }
+//# sourceMappingURL=syntaxError.js.map

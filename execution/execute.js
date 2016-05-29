@@ -61,7 +61,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * a GraphQLError will be thrown immediately explaining the invalid input.
  */
 
-
 /**
  * Terminology
  *
@@ -88,7 +87,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Namely, schema of the type system that is currently executing,
  * and the fragments defined in the query document
  */
-
 
 /**
  * The result of execution. `data` is the result of executing the
@@ -144,7 +142,7 @@ function execute(schema, documentAST, rootValue, contextValue, variableValues, o
 
 function buildExecutionContext(schema, documentAST, rootValue, contextValue, rawVariableValues, operationName) {
   var errors = [];
-  var operation = void 0;
+  var operation = undefined;
   var fragments = (0, _create2.default)(null);
   documentAST.definitions.forEach(function (definition) {
     switch (definition.kind) {
@@ -707,3 +705,4 @@ function getFieldDef(schema, parentType, fieldName) {
   }
   return parentType.getFields()[fieldName];
 }
+//# sourceMappingURL=execute.js.map

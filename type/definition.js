@@ -683,7 +683,6 @@ var GraphQLList = exports.GraphQLList = function () {
  * Note: the enforcement of non-nullability occurs within the executor.
  */
 
-
 var GraphQLNonNull = exports.GraphQLNonNull = function () {
   function GraphQLNonNull(type) {
     (0, _classCallCheck3.default)(this, GraphQLNonNull);
@@ -700,3 +699,4 @@ var GraphQLNonNull = exports.GraphQLNonNull = function () {
   }]);
   return GraphQLNonNull;
 }();
+//# sourceMappingURL=definition.js.map

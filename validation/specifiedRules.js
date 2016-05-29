@@ -57,36 +57,25 @@ var _UniqueInputFieldNames = require('./rules/UniqueInputFieldNames');
  * This set includes all validation rules defined by the GraphQL spec.
  */
 
-
 // Spec Section: "Field Selection Merging"
-
 
 // Spec Section: "Variable Default Values Are Correctly Typed"
 
-
 // Spec Section: "Argument Values Type Correctness"
-
 
 // Spec Section: "Argument Names"
 
-
 // Spec Section: "All Variables Used"
-
 
 // Spec Section: "Variable Uniqueness"
 
-
 // Spec Section: "Fragment spread is possible"
-
 
 // Spec Section: "Fragment spread target defined"
 
-
 // Spec Section: "Field Selections on Objects, Interfaces, and Unions Types"
 
-
 // Spec Section: "Variables are Input Types"
-
 
 // Spec Section: "Fragment Spread Type Existence"
 
@@ -104,35 +93,25 @@ var specifiedRules = exports.specifiedRules = [_UniqueOperationNames.UniqueOpera
 
 // Spec Section: "Input Object Field Uniqueness"
 
-
 // Spec Section: "All Variable Usages Are Allowed"
-
 
 // Spec Section: "Argument Optionality"
 
-
 // Spec Section: "Argument Uniqueness"
-
 
 // Spec Section: "Directives Are Defined"
 
-
 // Spec Section: "All Variable Used Defined"
-
 
 // Spec Section: "Fragments must not form cycles"
 
-
 // Spec Section: "Fragments must be used"
-
 
 // Spec Section: "Fragment Name Uniqueness"
 
-
 // Spec Section: "Leaf Field Selections"
-
 
 // Spec Section: "Fragments on Composite Types"
 
-
 // Spec Section: "Lone Anonymous Operation"
+//# sourceMappingURL=specifiedRules.js.map

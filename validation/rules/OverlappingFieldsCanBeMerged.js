@@ -115,7 +115,6 @@ function OverlappingFieldsCanBeMerged(context) {
 
 // Map of array of those.
 
-
 /**
  * Algorithm:
  *
@@ -516,7 +515,7 @@ function _collectFieldsAndFragmentNames(context, parentType, selectionSet, astAn
     switch (selection.kind) {
       case _kinds.FIELD:
         var fieldName = selection.name.value;
-        var fieldDef = void 0;
+        var fieldDef = undefined;
         if (parentType instanceof _definition.GraphQLObjectType || parentType instanceof _definition.GraphQLInterfaceType) {
           fieldDef = parentType.getFields()[fieldName];
         }
@@ -607,3 +606,4 @@ function _pairSetAdd(data, a, b, areMutuallyExclusive) {
   }
   map[b] = areMutuallyExclusive;
 }
+//# sourceMappingURL=OverlappingFieldsCanBeMerged.js.map

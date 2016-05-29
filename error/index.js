@@ -39,3 +39,4 @@ Object.defineProperty(exports, 'formatError', {
     return _formatError.formatError;
   }
 });
+//# sourceMappingURL=index.js.map

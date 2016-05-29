@@ -167,12 +167,12 @@ var BREAK = exports.BREAK = {};
 function visit(root, visitor, keyMap) {
   var visitorKeys = keyMap || QueryDocumentKeys;
 
-  var stack = void 0;
+  var stack = undefined;
   var inArray = Array.isArray(root);
   var keys = [root];
   var index = -1;
   var edits = [];
-  var parent = void 0;
+  var parent = undefined;
   var path = [];
   var ancestors = [];
   var newRoot = root;
@@ -180,8 +180,8 @@ function visit(root, visitor, keyMap) {
   do {
     index++;
     var isLeaving = index === keys.length;
-    var key = void 0;
-    var node = void 0;
+    var key = undefined;
+    var node = undefined;
     var isEdited = isLeaving && edits.length !== 0;
     if (isLeaving) {
       key = ancestors.length === 0 ? undefined : path.pop();
@@ -236,7 +236,7 @@ function visit(root, visitor, keyMap) {
       }
     }
 
-    var result = void 0;
+    var result = undefined;
     if (!Array.isArray(node)) {
       if (!isNode(node)) {
         throw new Error('Invalid AST Node: ' + (0, _stringify2.default)(node));
@@ -365,7 +365,7 @@ function visitWithTypeInfo(typeInfo, visitor) {
     },
     leave: function leave(node) {
       var fn = getVisitFn(visitor, node.kind, /* isLeaving */true);
-      var result = void 0;
+      var result = undefined;
       if (fn) {
         result = fn.apply(visitor, arguments);
       }
@@ -406,3 +406,4 @@ function getVisitFn(visitor, kind, isLeaving) {
     }
   }
 }
+//# sourceMappingURL=visitor.js.map

@@ -128,7 +128,7 @@ function astFromValue(value, type) {
   // in the JavaScript object.
   var fields = [];
   (0, _keys2.default)(_value).forEach(function (fieldName) {
-    var fieldType = void 0;
+    var fieldType = undefined;
     if (type instanceof _definition.GraphQLInputObjectType) {
       var fieldDef = type.getFields()[fieldName];
       fieldType = fieldDef && fieldDef.type;
@@ -152,3 +152,4 @@ function astFromValue(value, type) {
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
+//# sourceMappingURL=astFromValue.js.map

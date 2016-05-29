@@ -29,7 +29,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * rewind or fast forward the lexer to a new position in the source.
  */
 
-
 /**
  * A representation of a lexed Token. Value only appears for non-punctuation
  * tokens: NAME, INT, FLOAT, and STRING.
@@ -453,3 +452,4 @@ function readName(source, position) {
   }
   return makeToken(TokenKind.NAME, position, end, slice.call(body, position, end));
 }
+//# sourceMappingURL=lexer.js.map

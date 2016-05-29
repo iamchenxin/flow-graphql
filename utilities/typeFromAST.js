@@ -16,7 +16,7 @@ var _definition = require('../type/definition');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function typeFromAST(schema, inputTypeAST) {
-  var innerType = void 0;
+  var innerType = undefined;
   if (inputTypeAST.kind === _kinds.LIST_TYPE) {
     innerType = typeFromAST(schema, inputTypeAST.type);
     return innerType && new _definition.GraphQLList(innerType);
@@ -36,3 +36,4 @@ function typeFromAST(schema, inputTypeAST) {
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
+//# sourceMappingURL=typeFromAST.js.map

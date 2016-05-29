@@ -102,7 +102,7 @@ var TypeInfo = exports.TypeInfo = function () {
       switch (node.kind) {
         case Kind.SELECTION_SET:
           var namedType = (0, _definition.getNamedType)(this.getType());
-          var compositeType = void 0;
+          var compositeType = undefined;
           if ((0, _definition.isCompositeType)(namedType)) {
             // isCompositeType is a type refining predicate, so this is safe.
             compositeType = namedType;
@@ -111,7 +111,7 @@ var TypeInfo = exports.TypeInfo = function () {
           break;
         case Kind.FIELD:
           var parentType = this.getParentType();
-          var fieldDef = void 0;
+          var fieldDef = undefined;
           if (parentType) {
             fieldDef = this._getFieldDef(schema, parentType, node);
           }
@@ -122,7 +122,7 @@ var TypeInfo = exports.TypeInfo = function () {
           this._directive = schema.getDirective(node.name.value);
           break;
         case Kind.OPERATION_DEFINITION:
-          var type = void 0;
+          var type = undefined;
           if (node.operation === 'query') {
             type = schema.getQueryType();
           } else if (node.operation === 'mutation') {
@@ -143,8 +143,8 @@ var TypeInfo = exports.TypeInfo = function () {
           this._inputTypeStack.push(inputType);
           break;
         case Kind.ARGUMENT:
-          var argDef = void 0;
-          var argType = void 0;
+          var argDef = undefined;
+          var argType = undefined;
           var fieldOrDirective = this.getDirective() || this.getFieldDef();
           if (fieldOrDirective) {
             argDef = (0, _find2.default)(fieldOrDirective.args, function (arg) {
@@ -163,7 +163,7 @@ var TypeInfo = exports.TypeInfo = function () {
           break;
         case Kind.OBJECT_FIELD:
           var objectType = (0, _definition.getNamedType)(this.getInputType());
-          var fieldType = void 0;
+          var fieldType = undefined;
           if (objectType instanceof _definition.GraphQLInputObjectType) {
             var inputField = objectType.getFields()[node.name.value];
             fieldType = inputField ? inputField.type : undefined;
@@ -238,3 +238,4 @@ function getFieldDef(schema, parentType, fieldAST) {
     return parentType.getFields()[name];
   }
 }
+//# sourceMappingURL=TypeInfo.js.map

@@ -19,3 +19,4 @@ function invariant(condition, message) {
     throw new Error(message);
   }
 }
+//# sourceMappingURL=invariant.js.map

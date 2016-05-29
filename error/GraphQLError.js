@@ -95,3 +95,4 @@ var GraphQLError = exports.GraphQLError = function (_Error) {
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
+//# sourceMappingURL=GraphQLError.js.map

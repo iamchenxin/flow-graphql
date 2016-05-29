@@ -105,3 +105,4 @@ function getDirectiveLocationForASTPath(ancestors) {
       return parentNode.kind === _kinds.INPUT_OBJECT_TYPE_DEFINITION ? _directives.DirectiveLocation.INPUT_FIELD_DEFINITION : _directives.DirectiveLocation.ARGUMENT_DEFINITION;
   }
 }
+//# sourceMappingURL=KnownDirectives.js.map

@@ -60,8 +60,8 @@ function suggestionList(input, options) {
  * @return {int} distance in number of edits
  */
 function lexicalDistance(a, b) {
-  var i = void 0;
-  var j = void 0;
+  var i = undefined;
+  var j = undefined;
   var d = [];
   var aLength = a.length;
   var bLength = b.length;
@@ -88,3 +88,4 @@ function lexicalDistance(a, b) {
 
   return d[aLength][bLength];
 }
+//# sourceMappingURL=suggestionList.js.map

@@ -20,3 +20,4 @@ exports.default = isNullish;
 function isNullish(value) {
   return value === null || value === undefined || value !== value;
 }
+//# sourceMappingURL=isNullish.js.map

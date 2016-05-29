@@ -45,3 +45,4 @@ function LoneAnonymousOperation(context) {
     }
   };
 }
+//# sourceMappingURL=LoneAnonymousOperation.js.map

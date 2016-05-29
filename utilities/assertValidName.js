@@ -27,3 +27,4 @@ var NAME_RX = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
 function assertValidName(name) {
   (0, _invariant2.default)(NAME_RX.test(name), 'Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but "' + name + '" does not.');
 }
+//# sourceMappingURL=assertValidName.js.map

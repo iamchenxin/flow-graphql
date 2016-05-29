@@ -295,3 +295,4 @@ function assertObjectImplementsInterface(schema, object, iface) {
     });
   });
 }
+//# sourceMappingURL=schema.js.map

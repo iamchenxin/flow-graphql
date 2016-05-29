@@ -77,7 +77,7 @@ function buildASTSchema(ast) {
     throw new Error('Must provide a document ast.');
   }
 
-  var schemaDef = void 0;
+  var schemaDef = undefined;
 
   var typeDefs = [];
   var directiveDefs = [];
@@ -108,9 +108,9 @@ function buildASTSchema(ast) {
     throw new Error('Must provide a schema definition.');
   }
 
-  var queryTypeName = void 0;
-  var mutationTypeName = void 0;
-  var subscriptionTypeName = void 0;
+  var queryTypeName = undefined;
+  var mutationTypeName = undefined;
+  var subscriptionTypeName = undefined;
   schemaDef.operationTypes.forEach(function (operationType) {
     var typeName = operationType.type.name.value;
     if (operationType.operation === 'query') {
@@ -386,3 +386,4 @@ function getDeprecationReason(directives) {
 
   return reason;
 }
+//# sourceMappingURL=buildASTSchema.js.map

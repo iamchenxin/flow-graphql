@@ -33,3 +33,4 @@ var Source = exports.Source = function Source(body, name) {
   this.body = body;
   this.name = name || 'GraphQL';
 };
+//# sourceMappingURL=source.js.map

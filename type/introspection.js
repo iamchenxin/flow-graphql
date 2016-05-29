@@ -479,3 +479,4 @@ var TypeNameMetaFieldDef = exports.TypeNameMetaFieldDef = {
     return parentType.name;
   }
 };
+//# sourceMappingURL=introspection.js.map

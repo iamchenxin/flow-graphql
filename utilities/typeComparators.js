@@ -122,3 +122,4 @@ function doTypesOverlap(schema, typeA, typeB) {
   // Otherwise the types do not overlap.
   return false;
 }
+//# sourceMappingURL=typeComparators.js.map

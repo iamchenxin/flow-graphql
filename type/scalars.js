@@ -95,3 +95,4 @@ var GraphQLID = exports.GraphQLID = new _definition.GraphQLScalarType({
     return ast.kind === _language.Kind.STRING || ast.kind === _language.Kind.INT ? ast.value : null;
   }
 });
+//# sourceMappingURL=scalars.js.map

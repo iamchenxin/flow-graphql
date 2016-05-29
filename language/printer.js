@@ -54,7 +54,6 @@ var printDocASTReducer = {
     return !name && !directives && !varDefs && op === 'query' ? selectionSet : join([op, join([name, varDefs]), directives, selectionSet], ' ');
   },
 
-
   VariableDefinition: function VariableDefinition(_ref) {
     var variable = _ref.variable;
     var type = _ref.type;
@@ -284,3 +283,4 @@ function wrap(start, maybeString, end) {
 function indent(maybeString) {
   return maybeString && maybeString.replace(/\n/g, '\n  ');
 }
+//# sourceMappingURL=printer.js.map

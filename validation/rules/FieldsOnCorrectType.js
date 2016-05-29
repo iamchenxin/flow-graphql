@@ -139,3 +139,4 @@ function getSuggestedFieldNames(schema, type, fieldName) {
   // Otherwise, must be a Union type, which does not define fields.
   return [];
 }
+//# sourceMappingURL=FieldsOnCorrectType.js.map

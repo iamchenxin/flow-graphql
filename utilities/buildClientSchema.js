@@ -308,3 +308,4 @@ function buildClientSchema(introspection) {
 function cannotExecuteClientSchema() {
   throw new Error('Client Schema cannot be used for execution.');
 }
+//# sourceMappingURL=buildClientSchema.js.map

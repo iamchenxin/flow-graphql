@@ -449,3 +449,4 @@ function extendSchema(schema, documentAST) {
 function cannotExecuteClientSchema() {
   throw new Error('Client Schema cannot be used for execution.');
 }
+//# sourceMappingURL=extendSchema.js.map

@@ -27,3 +27,4 @@ function quotedOrList(items) {
     return list + (selected.length > 2 ? ', ' : ' ') + (index === selected.length - 1 ? 'or ' : '') + quoted;
   });
 }
+//# sourceMappingURL=quotedOrList.js.map

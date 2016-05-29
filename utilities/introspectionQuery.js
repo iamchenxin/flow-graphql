@@ -12,3 +12,4 @@ var introspectionQuery = exports.introspectionQuery = '\n  query IntrospectionQu
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
+//# sourceMappingURL=introspectionQuery.js.map

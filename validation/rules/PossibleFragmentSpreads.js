@@ -61,3 +61,4 @@ function getFragmentType(context, name) {
   var frag = context.getFragment(name);
   return frag && (0, _typeFromAST.typeFromAST)(context.getSchema(), frag.typeCondition);
 }
+//# sourceMappingURL=PossibleFragmentSpreads.js.map
