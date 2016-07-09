@@ -12,10 +12,11 @@ var _GraphQLError = require('./GraphQLError');
  * GraphQL operation, produce a new GraphQLError aware of the location in the
  * document responsible for the original Error.
  */
-function locatedError(originalError, nodes) {
+function locatedError(originalError, nodes, path) {
   var message = originalError ? originalError.message || String(originalError) : 'An unknown error occurred.';
   var stack = originalError ? originalError.stack : null;
   var error = new _GraphQLError.GraphQLError(message, nodes, stack);
+  error.path = path;
   error.originalError = originalError;
   return error;
 }

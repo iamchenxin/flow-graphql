@@ -4,21 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _getIterator2 = require('babel-runtime/core-js/get-iterator');
-
-var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 exports.isValidLiteralValue = isValidLiteralValue;
 
@@ -42,6 +36,8 @@ var _isNullish2 = _interopRequireDefault(_isNullish);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 /**
  * Utility for validators which determines if a value literal AST is valid given
  * an input type.
@@ -49,16 +45,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Note that this only validates literal values, variables are assumed to
  * provide values of the correct type.
  */
-
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 function isValidLiteralValue(type, valueAST) {
   // A value must be provided if the type is non-null.
   if (type instanceof _definition.GraphQLNonNull) {
@@ -100,85 +86,46 @@ function isValidLiteralValue(type, valueAST) {
       };
     }();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object") return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   }
 
   // Input objects check each defined field and look for undefined fields.
   if (type instanceof _definition.GraphQLInputObjectType) {
-    if (valueAST.kind !== _kinds.OBJECT) {
-      return ['Expected "' + type.name + '", found not an object.'];
-    }
-    var fields = type.getFields();
+    var _ret2 = function () {
+      if (valueAST.kind !== _kinds.OBJECT) {
+        return {
+          v: ['Expected "' + type.name + '", found not an object.']
+        };
+      }
+      var fields = type.getFields();
 
-    var errors = [];
+      var errors = [];
 
-    // Ensure every provided field is defined.
-    var fieldASTs = valueAST.fields;
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = (0, _getIterator3.default)(fieldASTs), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var providedFieldAST = _step.value;
-
+      // Ensure every provided field is defined.
+      var fieldASTs = valueAST.fields;
+      fieldASTs.forEach(function (providedFieldAST) {
         if (!fields[providedFieldAST.name.value]) {
           errors.push('In field "' + providedFieldAST.name.value + '": Unknown field.');
         }
-      }
+      });
 
       // Ensure every defined field is valid.
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-
-    var fieldASTMap = (0, _keyMap2.default)(fieldASTs, function (fieldAST) {
-      return fieldAST.name.value;
-    });
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      var _loop = function _loop() {
-        var fieldName = _step2.value;
-
+      var fieldASTMap = (0, _keyMap2.default)(fieldASTs, function (fieldAST) {
+        return fieldAST.name.value;
+      });
+      Object.keys(fields).forEach(function (fieldName) {
         var result = isValidLiteralValue(fields[fieldName].type, fieldASTMap[fieldName] && fieldASTMap[fieldName].value);
-        errors.push.apply(errors, (0, _toConsumableArray3.default)(result.map(function (error) {
+        errors.push.apply(errors, _toConsumableArray(result.map(function (error) {
           return 'In field "' + fieldName + '": ' + error;
         })));
+      });
+
+      return {
+        v: errors
       };
+    }();
 
-      for (var _iterator2 = (0, _getIterator3.default)((0, _keys2.default)(fields)), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        _loop();
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
-    }
-
-    return errors;
+    if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
   }
 
   (0, _invariant2.default)(type instanceof _definition.GraphQLScalarType || type instanceof _definition.GraphQLEnumType, 'Must be input type');

@@ -4,21 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _create = require('babel-runtime/core-js/object/create');
-
-var _create2 = _interopRequireDefault(_create);
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 exports.execute = execute;
 
@@ -108,7 +102,7 @@ function execute(schema, documentAST, rootValue, contextValue, variableValues, o
   // field and its descendants will be omitted, and sibling fields will still
   // be executed. An execution which encounters errors will still result in a
   // resolved Promise.
-  return new _promise2.default(function (resolve) {
+  return new Promise(function (resolve) {
     resolve(executeOperation(context, context.operation, rootValue));
   }).catch(function (error) {
     // Errors from sub-fields of a NonNull type may propagate to the top level,
@@ -130,20 +124,10 @@ function execute(schema, documentAST, rootValue, contextValue, variableValues, o
  *
  * Throws a GraphQLError if a valid execution context cannot be created.
  */
-
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 function buildExecutionContext(schema, documentAST, rootValue, contextValue, rawVariableValues, operationName) {
   var errors = [];
   var operation = undefined;
-  var fragments = (0, _create2.default)(null);
+  var fragments = Object.create(null);
   documentAST.definitions.forEach(function (definition) {
     switch (definition.kind) {
       case _language.Kind.OPERATION_DEFINITION:
@@ -186,12 +170,14 @@ function buildExecutionContext(schema, documentAST, rootValue, contextValue, raw
  */
 function executeOperation(exeContext, operation, rootValue) {
   var type = getOperationRootType(exeContext.schema, operation);
-  var fields = collectFields(exeContext, type, operation.selectionSet, (0, _create2.default)(null), (0, _create2.default)(null));
+  var fields = collectFields(exeContext, type, operation.selectionSet, Object.create(null), Object.create(null));
+
+  var path = [];
 
   if (operation.operation === 'mutation') {
-    return executeFieldsSerially(exeContext, type, rootValue, fields);
+    return executeFieldsSerially(exeContext, type, rootValue, path, fields);
   }
-  return executeFields(exeContext, type, rootValue, fields);
+  return executeFields(exeContext, type, rootValue, path, fields);
 }
 
 /**
@@ -222,11 +208,12 @@ function getOperationRootType(schema, operation) {
  * Implements the "Evaluating selection sets" section of the spec
  * for "write" mode.
  */
-function executeFieldsSerially(exeContext, parentType, sourceValue, fields) {
-  return (0, _keys2.default)(fields).reduce(function (prevPromise, responseName) {
+function executeFieldsSerially(exeContext, parentType, sourceValue, path, fields) {
+  return Object.keys(fields).reduce(function (prevPromise, responseName) {
     return prevPromise.then(function (results) {
       var fieldASTs = fields[responseName];
-      var result = resolveField(exeContext, parentType, sourceValue, fieldASTs);
+      var fieldPath = path.concat([responseName]);
+      var result = resolveField(exeContext, parentType, sourceValue, fieldASTs, fieldPath);
       if (result === undefined) {
         return results;
       }
@@ -239,19 +226,20 @@ function executeFieldsSerially(exeContext, parentType, sourceValue, fields) {
       results[responseName] = result;
       return results;
     });
-  }, _promise2.default.resolve({}));
+  }, Promise.resolve({}));
 }
 
 /**
  * Implements the "Evaluating selection sets" section of the spec
  * for "read" mode.
  */
-function executeFields(exeContext, parentType, sourceValue, fields) {
+function executeFields(exeContext, parentType, sourceValue, path, fields) {
   var containsPromise = false;
 
-  var finalResults = (0, _keys2.default)(fields).reduce(function (results, responseName) {
+  var finalResults = Object.keys(fields).reduce(function (results, responseName) {
     var fieldASTs = fields[responseName];
-    var result = resolveField(exeContext, parentType, sourceValue, fieldASTs);
+    var fieldPath = path.concat([responseName]);
+    var result = resolveField(exeContext, parentType, sourceValue, fieldASTs, fieldPath);
     if (result === undefined) {
       return results;
     }
@@ -260,7 +248,7 @@ function executeFields(exeContext, parentType, sourceValue, fields) {
       containsPromise = true;
     }
     return results;
-  }, (0, _create2.default)(null));
+  }, Object.create(null));
 
   // If there are no promises, we can just return the object
   if (!containsPromise) {
@@ -290,11 +278,11 @@ function collectFields(exeContext, runtimeType, selectionSet, fields, visitedFra
         if (!shouldIncludeNode(exeContext, selection.directives)) {
           continue;
         }
-        var name = getFieldEntryKey(selection);
-        if (!fields[name]) {
-          fields[name] = [];
+        var _name = getFieldEntryKey(selection);
+        if (!fields[_name]) {
+          fields[_name] = [];
         }
-        fields[name].push(selection);
+        fields[_name].push(selection);
         break;
       case _language.Kind.INLINE_FRAGMENT:
         if (!shouldIncludeNode(exeContext, selection.directives) || !doesFragmentConditionMatch(exeContext, selection, runtimeType)) {
@@ -380,15 +368,15 @@ function doesFragmentConditionMatch(exeContext, fragment, type) {
  * `Promise.all` so it will work with any implementation of ES6 promises.
  */
 function promiseForObject(object) {
-  var keys = (0, _keys2.default)(object);
+  var keys = Object.keys(object);
   var valuesAndPromises = keys.map(function (name) {
     return object[name];
   });
-  return _promise2.default.all(valuesAndPromises).then(function (values) {
+  return Promise.all(valuesAndPromises).then(function (values) {
     return values.reduce(function (resolvedObject, value, i) {
       resolvedObject[keys[i]] = value;
       return resolvedObject;
-    }, (0, _create2.default)(null));
+    }, Object.create(null));
   });
 }
 
@@ -405,7 +393,7 @@ function getFieldEntryKey(node) {
  * then calls completeValue to complete promises, serialize scalars, or execute
  * the sub-selection-set for objects.
  */
-function resolveField(exeContext, parentType, source, fieldASTs) {
+function resolveField(exeContext, parentType, source, fieldASTs, path) {
   var fieldAST = fieldASTs[0];
   var fieldName = fieldAST.name.value;
 
@@ -434,6 +422,7 @@ function resolveField(exeContext, parentType, source, fieldASTs) {
     fieldASTs: fieldASTs,
     returnType: returnType,
     parentType: parentType,
+    path: path,
     schema: exeContext.schema,
     fragments: exeContext.fragments,
     rootValue: exeContext.rootValue,
@@ -445,7 +434,7 @@ function resolveField(exeContext, parentType, source, fieldASTs) {
   // or abrupt (error).
   var result = resolveOrError(resolveFn, source, args, context, info);
 
-  return completeValueCatchingError(exeContext, returnType, fieldASTs, info, result);
+  return completeValueCatchingError(exeContext, returnType, fieldASTs, info, path, result);
 }
 
 // Isolates the "ReturnOrAbrupt" behavior to not de-opt the `resolveField`
@@ -462,17 +451,17 @@ function resolveOrError(resolveFn, source, args, context, info) {
 
 // This is a small wrapper around completeValue which detects and logs errors
 // in the execution context.
-function completeValueCatchingError(exeContext, returnType, fieldASTs, info, result) {
+function completeValueCatchingError(exeContext, returnType, fieldASTs, info, path, result) {
   // If the field type is non-nullable, then it is resolved without any
   // protection from errors.
   if (returnType instanceof _definition.GraphQLNonNull) {
-    return completeValue(exeContext, returnType, fieldASTs, info, result);
+    return completeValue(exeContext, returnType, fieldASTs, info, path, result);
   }
 
   // Otherwise, error protection is applied, logging the error and resolving
   // a null value for this field if one is encountered.
   try {
-    var completed = completeValue(exeContext, returnType, fieldASTs, info, result);
+    var completed = completeValue(exeContext, returnType, fieldASTs, info, path, result);
     if (isThenable(completed)) {
       // If `completeValue` returned a rejected promise, log the rejection
       // error and resolve to null.
@@ -480,7 +469,7 @@ function completeValueCatchingError(exeContext, returnType, fieldASTs, info, res
       // to take a second callback for the error case.
       return completed.then(undefined, function (error) {
         exeContext.errors.push(error);
-        return _promise2.default.resolve(null);
+        return Promise.resolve(null);
       });
     }
     return completed;
@@ -513,31 +502,31 @@ function completeValueCatchingError(exeContext, returnType, fieldASTs, info, res
  * Otherwise, the field type expects a sub-selection set, and will complete the
  * value by evaluating all sub-selections.
  */
-function completeValue(exeContext, returnType, fieldASTs, info, result) {
+function completeValue(exeContext, returnType, fieldASTs, info, path, result) {
   // If result is a Promise, apply-lift over completeValue.
   if (isThenable(result)) {
     return result.then(
     // Once resolved to a value, complete that value.
     function (resolved) {
-      return completeValue(exeContext, returnType, fieldASTs, info, resolved);
+      return completeValue(exeContext, returnType, fieldASTs, info, path, resolved);
     },
     // If rejected, create a located error, and continue to reject.
     function (error) {
-      return _promise2.default.reject((0, _error.locatedError)(error, fieldASTs));
+      return Promise.reject((0, _error.locatedError)(error, fieldASTs, path));
     });
   }
 
   // If result is an Error, throw a located error.
   if (result instanceof Error) {
-    throw (0, _error.locatedError)(result, fieldASTs);
+    throw (0, _error.locatedError)(result, fieldASTs, path);
   }
 
   // If field type is NonNull, complete for inner type, and throw field error
   // if result is null.
   if (returnType instanceof _definition.GraphQLNonNull) {
-    var completed = completeValue(exeContext, returnType.ofType, fieldASTs, info, result);
+    var completed = completeValue(exeContext, returnType.ofType, fieldASTs, info, path, result);
     if (completed === null) {
-      throw new _error.GraphQLError('Cannot return null for non-nullable field ' + info.parentType + '.' + info.fieldName + '.', fieldASTs);
+      throw new _error.GraphQLError('Cannot return null for non-nullable field ' + info.parentType.name + '.' + info.fieldName + '.', fieldASTs);
     }
     return completed;
   }
@@ -549,7 +538,7 @@ function completeValue(exeContext, returnType, fieldASTs, info, result) {
 
   // If field type is List, complete each item in the list with the inner type
   if (returnType instanceof _definition.GraphQLList) {
-    return completeListValue(exeContext, returnType, fieldASTs, info, result);
+    return completeListValue(exeContext, returnType, fieldASTs, info, path, result);
   }
 
   // If field type is a leaf type, Scalar or Enum, serialize to a valid value,
@@ -561,38 +550,42 @@ function completeValue(exeContext, returnType, fieldASTs, info, result) {
   // If field type is an abstract type, Interface or Union, determine the
   // runtime Object type and complete for that type.
   if (returnType instanceof _definition.GraphQLInterfaceType || returnType instanceof _definition.GraphQLUnionType) {
-    return completeAbstractValue(exeContext, returnType, fieldASTs, info, result);
+    return completeAbstractValue(exeContext, returnType, fieldASTs, info, path, result);
   }
 
   // If field type is Object, execute and complete all sub-selections.
   if (returnType instanceof _definition.GraphQLObjectType) {
-    return completeObjectValue(exeContext, returnType, fieldASTs, info, result);
+    return completeObjectValue(exeContext, returnType, fieldASTs, info, path, result);
   }
 
   // Not reachable. All possible output types have been considered.
-  (0, _invariant2.default)(false, 'Cannot complete value of unexpected type "' + returnType + '".');
+  (0, _invariant2.default)(false, 'Cannot complete value of unexpected type "' + String(returnType) + '".');
 }
 
 /**
  * Complete a list value by completing each item in the list with the
  * inner type
  */
-function completeListValue(exeContext, returnType, fieldASTs, info, result) {
-  (0, _invariant2.default)(Array.isArray(result), 'User Error: expected iterable, but did not find one for field ' + info.parentType + '.' + info.fieldName + '.');
+function completeListValue(exeContext, returnType, fieldASTs, info, path, result) {
+  (0, _invariant2.default)(Array.isArray(result), 'User Error: expected iterable, but did not find one for field ' + info.parentType.name + '.' + info.fieldName + '.');
 
   // This is specified as a simple map, however we're optimizing the path
   // where the list contains no Promises by avoiding creating another Promise.
   var itemType = returnType.ofType;
   var containsPromise = false;
-  var completedResults = result.map(function (item) {
-    var completedItem = completeValueCatchingError(exeContext, itemType, fieldASTs, info, item);
+  var completedResults = result.map(function (item, index) {
+    // No need to modify the info object containing the path,
+    // since from here on it is not ever accessed by resolver functions.
+    var fieldPath = path.concat([index]);
+    var completedItem = completeValueCatchingError(exeContext, itemType, fieldASTs, info, fieldPath, item);
+
     if (!containsPromise && isThenable(completedItem)) {
       containsPromise = true;
     }
     return completedItem;
   });
 
-  return containsPromise ? _promise2.default.all(completedResults) : completedResults;
+  return containsPromise ? Promise.all(completedResults) : completedResults;
 }
 
 /**
@@ -609,34 +602,34 @@ function completeLeafValue(returnType, result) {
  * Complete a value of an abstract type by determining the runtime object type
  * of that value, then complete the value for that type.
  */
-function completeAbstractValue(exeContext, returnType, fieldASTs, info, result) {
+function completeAbstractValue(exeContext, returnType, fieldASTs, info, path, result) {
   var runtimeType = returnType.resolveType ? returnType.resolveType(result, exeContext.contextValue, info) : defaultResolveTypeFn(result, exeContext.contextValue, info, returnType);
 
   if (!(runtimeType instanceof _definition.GraphQLObjectType)) {
-    throw new _error.GraphQLError('Abstract type ' + returnType + ' must resolve to an Object type at runtime ' + ('for field ' + info.parentType + '.' + info.fieldName + ' with value "' + result + '",') + ('received "' + runtimeType + '".'), fieldASTs);
+    throw new _error.GraphQLError('Abstract type ' + returnType.name + ' must resolve to an Object type at ' + ('runtime for field ' + info.parentType.name + '.' + info.fieldName + ' with ') + ('value "' + String(result) + '", received "' + String(runtimeType) + '".'), fieldASTs);
   }
 
   if (!exeContext.schema.isPossibleType(returnType, runtimeType)) {
-    throw new _error.GraphQLError('Runtime Object type "' + runtimeType + '" is not a possible type ' + ('for "' + returnType + '".'), fieldASTs);
+    throw new _error.GraphQLError('Runtime Object type "' + runtimeType.name + '" is not a possible type ' + ('for "' + returnType.name + '".'), fieldASTs);
   }
 
-  return completeObjectValue(exeContext, runtimeType, fieldASTs, info, result);
+  return completeObjectValue(exeContext, runtimeType, fieldASTs, info, path, result);
 }
 
 /**
  * Complete an Object value by executing all sub-selections.
  */
-function completeObjectValue(exeContext, returnType, fieldASTs, info, result) {
+function completeObjectValue(exeContext, returnType, fieldASTs, info, path, result) {
   // If there is an isTypeOf predicate function, call it with the
   // current result. If isTypeOf returns false, then raise an error rather
   // than continuing execution.
   if (returnType.isTypeOf && !returnType.isTypeOf(result, exeContext.contextValue, info)) {
-    throw new _error.GraphQLError('Expected value of type "' + returnType + '" but got: ' + result + '.', fieldASTs);
+    throw new _error.GraphQLError('Expected value of type "' + returnType.name + '" but got: ' + String(result) + '.', fieldASTs);
   }
 
   // Collect sub-fields to execute to complete this value.
-  var subFieldASTs = (0, _create2.default)(null);
-  var visitedFragmentNames = (0, _create2.default)(null);
+  var subFieldASTs = Object.create(null);
+  var visitedFragmentNames = Object.create(null);
   for (var i = 0; i < fieldASTs.length; i++) {
     var selectionSet = fieldASTs[i].selectionSet;
     if (selectionSet) {
@@ -644,7 +637,7 @@ function completeObjectValue(exeContext, returnType, fieldASTs, info, result) {
     }
   }
 
-  return executeFields(exeContext, returnType, result, subFieldASTs);
+  return executeFields(exeContext, returnType, result, path, subFieldASTs);
 }
 
 /**
@@ -672,7 +665,7 @@ function defaultResolveFn(source, args, context, _ref) {
   var fieldName = _ref.fieldName;
 
   // ensure source is a value for which property access is acceptable.
-  if ((typeof source === 'undefined' ? 'undefined' : (0, _typeof3.default)(source)) === 'object' || typeof source === 'function') {
+  if ((typeof source === 'undefined' ? 'undefined' : _typeof(source)) === 'object' || typeof source === 'function') {
     var property = source[fieldName];
     return typeof property === 'function' ? source[fieldName]() : property;
   }
@@ -683,7 +676,7 @@ function defaultResolveFn(source, args, context, _ref) {
  * function.
  */
 function isThenable(value) {
-  return (typeof value === 'undefined' ? 'undefined' : (0, _typeof3.default)(value)) === 'object' && value !== null && typeof value.then === 'function';
+  return (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null && typeof value.then === 'function';
 }
 
 /**

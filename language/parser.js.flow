@@ -204,10 +204,11 @@ function parseDefinition(parser: Parser): Definition {
 
   if (peek(parser, TokenKind.NAME)) {
     switch (parser.token.value) {
+      // Note: subscription is an experimental non-spec addition.
       case 'query':
       case 'mutation':
-      // Note: subscription is an experimental non-spec addition.
-      case 'subscription': return parseOperationDefinition(parser);
+      case 'subscription':
+        return parseOperationDefinition(parser);
 
       case 'fragment': return parseFragmentDefinition(parser);
 
@@ -491,21 +492,21 @@ function parseValueLiteral(parser: Parser, isConst: boolean): Value {
     case TokenKind.INT:
       advance(parser);
       return {
-        kind: INT,
+        kind: (INT: 'IntValue'),
         value: ((token.value: any): string),
         loc: loc(parser, token.start)
       };
     case TokenKind.FLOAT:
       advance(parser);
       return {
-        kind: FLOAT,
+        kind: (FLOAT: 'FloatValue'),
         value: ((token.value: any): string),
         loc: loc(parser, token.start)
       };
     case TokenKind.STRING:
       advance(parser);
       return {
-        kind: STRING,
+        kind: (STRING: 'StringValue'),
         value: ((token.value: any): string),
         loc: loc(parser, token.start)
       };
@@ -513,14 +514,14 @@ function parseValueLiteral(parser: Parser, isConst: boolean): Value {
       if (token.value === 'true' || token.value === 'false') {
         advance(parser);
         return {
-          kind: BOOLEAN,
+          kind: (BOOLEAN: 'BooleanValue'),
           value: token.value === 'true',
           loc: loc(parser, token.start)
         };
       } else if (token.value !== 'null') {
         advance(parser);
         return {
-          kind: ENUM,
+          kind: (ENUM: 'EnumValue'),
           value: ((token.value: any): string),
           loc: loc(parser, token.start)
         };

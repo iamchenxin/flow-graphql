@@ -4,29 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
-var _map2 = require('babel-runtime/core-js/map');
-
-var _map3 = _interopRequireDefault(_map2);
-
-var _getIterator2 = require('babel-runtime/core-js/get-iterator');
-
-var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-var _from = require('babel-runtime/core-js/array/from');
-
-var _from2 = _interopRequireDefault(_from);
-
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 exports.printSchema = printSchema;
 exports.printIntrospectionSchema = printIntrospectionSchema;
@@ -49,6 +27,7 @@ var _directives = require('../type/directives');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 /**
  *  Copyright (c) 2015, Facebook, Inc.
  *  All rights reserved.
@@ -99,7 +78,7 @@ function printFilteredSchema(schema, directiveFilter, typeFilter) {
     return directiveFilter(directive.name);
   });
   var typeMap = schema.getTypeMap();
-  var types = (0, _keys2.default)(typeMap).filter(typeFilter).sort(function (name1, name2) {
+  var types = Object.keys(typeMap).filter(typeFilter).sort(function (name1, name2) {
     return name1.localeCompare(name2);
   }).map(function (typeName) {
     return typeMap[typeName];
@@ -112,17 +91,17 @@ function printSchemaDefinition(schema) {
 
   var queryType = schema.getQueryType();
   if (queryType) {
-    operationTypes.push('  query: ' + queryType);
+    operationTypes.push('  query: ' + queryType.name);
   }
 
   var mutationType = schema.getMutationType();
   if (mutationType) {
-    operationTypes.push('  mutation: ' + mutationType);
+    operationTypes.push('  mutation: ' + mutationType.name);
   }
 
   var subscriptionType = schema.getSubscriptionType();
   if (subscriptionType) {
-    operationTypes.push('  subscription: ' + subscriptionType);
+    operationTypes.push('  subscription: ' + subscriptionType.name);
   }
 
   return 'schema {\n' + operationTypes.join('\n') + '\n}';
@@ -173,7 +152,7 @@ function printEnum(type) {
 
 function printInputObject(type) {
   var fieldMap = type.getFields();
-  var fields = (0, _keys2.default)(fieldMap).map(function (fieldName) {
+  var fields = Object.keys(fieldMap).map(function (fieldName) {
     return fieldMap[fieldName];
   });
   return 'input ' + type.name + ' {\n' + fields.map(function (f) {
@@ -183,11 +162,11 @@ function printInputObject(type) {
 
 function printFields(type) {
   var fieldMap = type.getFields();
-  var fields = (0, _keys2.default)(fieldMap).map(function (fieldName) {
+  var fields = Object.keys(fieldMap).map(function (fieldName) {
     return fieldMap[fieldName];
   });
   return fields.map(function (f) {
-    return '  ' + f.name + printArgs(f) + ': ' + f.type + printDeprecated(f);
+    return '  ' + f.name + printArgs(f) + ': ' + String(f.type) + printDeprecated(f);
   }).join('\n');
 }
 
@@ -210,7 +189,7 @@ function printArgs(fieldOrDirectives) {
 }
 
 function printInputValue(arg) {
-  var argDecl = arg.name + ': ' + arg.type;
+  var argDecl = arg.name + ': ' + String(arg.type);
   if (!(0, _isNullish2.default)(arg.defaultValue)) {
     argDecl += ' = ' + (0, _printer.print)((0, _astFromValue.astFromValue)(arg.defaultValue, arg.type));
   }
@@ -240,7 +219,7 @@ function printFineSchema(schema) {
 function getOrderedNamesBySchema(schema) {
   var typeMap = schema.getTypeMap();
   var rootQuery = schema.getQueryType();
-  var definedTypeNames = (0, _keys2.default)(typeMap).filter(isDefinedType);
+  var definedTypeNames = Object.keys(typeMap).filter(isDefinedType);
 
   // use a big number 999999 to save some condition operator ~_~
   // todo should modify the magic 999999
@@ -258,21 +237,21 @@ function getOrderedNamesBySchema(schema) {
     var restNamesMap = levelTypeNames(rootMutation.name, unLeveledNamesMap, schema);
     var orderedMutations = flatNamesMapToArray(restNamesMap.leveledNamesMap);
 
-    orderedNames = [].concat((0, _toConsumableArray3.default)(orderedNames), orderedMutations);
+    orderedNames = [].concat(_toConsumableArray(orderedNames), orderedMutations);
     unLeveledNamesMap = restNamesMap.unLeveledNamesMap;
   }
 
   // todo throw a error .. should have none unknown type
   var theNamesIDontKnown = flatNamesMapToArray(unLeveledNamesMap);
   if (theNamesIDontKnown.length > 0) {
-    orderedNames = [].concat(theNamesIDontKnown, (0, _toConsumableArray3.default)(orderedNames));
+    orderedNames = [].concat(theNamesIDontKnown, _toConsumableArray(orderedNames));
   }
   return orderedNames;
 }
 
 function flatNamesMapToArray(leveledNamesMap) {
   var levelToNamesMap = flipMap(leveledNamesMap);
-  var nameLevels = (0, _from2.default)(levelToNamesMap.keys());
+  var nameLevels = Array.from(levelToNamesMap.keys());
   nameLevels.sort(function (pre, next) {
     return next - pre;
   });
@@ -282,7 +261,7 @@ function flatNamesMapToArray(leveledNamesMap) {
   var _iteratorError = undefined;
 
   try {
-    for (var _iterator = (0, _getIterator3.default)(nameLevels), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+    for (var _iterator = nameLevels[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var level = _step.value;
 
       var levelNames = levelToNamesMap.get(level);
@@ -317,10 +296,10 @@ function flatNamesMapToArray(leveledNamesMap) {
 // calculate level values for each type names by their reference to each other
 function levelTypeNames(rootName, namesMapToBeLeveled, schema) {
   var typeMap = schema.getTypeMap();
-  var unLeveledNamesMap = new _map3.default(namesMapToBeLeveled);
-  var leveledNamesMap = new _map3.default();
+  var unLeveledNamesMap = new Map(namesMapToBeLeveled);
+  var leveledNamesMap = new Map();
   // use a map to watch circle ref,Depth-first search
-  var circleRef = new _map3.default();
+  var circleRef = new Map();
 
   unLeveledNamesMap.delete(rootName);
   leveledNamesMap.set(rootName, 0);
@@ -332,7 +311,7 @@ function levelTypeNames(rootName, namesMapToBeLeveled, schema) {
     var _iteratorError2 = undefined;
 
     try {
-      for (var _iterator2 = (0, _getIterator3.default)(childrenNames), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      for (var _iterator2 = childrenNames[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
         var childName = _step2.value;
 
         var currentLevel = leveledNamesMap.get(childName);
@@ -386,7 +365,7 @@ function getRefedTypes(type) {
 
   var fields = type.getFields();
   // 1/2 get refed type name from fields
-  (0, _keys2.default)(fields).map(function (fieldKey) {
+  Object.keys(fields).map(function (fieldKey) {
     return fields[fieldKey];
   }).filter(function (field) {
     return isDefinedType(getTypeName(field.type));
@@ -411,7 +390,7 @@ function getRefedTypes(type) {
     var _iteratorError3 = undefined;
 
     try {
-      for (var _iterator3 = (0, _getIterator3.default)(type.getInterfaces()), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      for (var _iterator3 = type.getInterfaces()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
         var interfaceType = _step3.value;
 
         refedTypeNames.push(interfaceType.name);
@@ -435,13 +414,13 @@ function getRefedTypes(type) {
 }
 
 function arrayToMap(_array, defaultValue) {
-  var _map = new _map3.default();
+  var _map = new Map();
   var _iteratorNormalCompletion4 = true;
   var _didIteratorError4 = false;
   var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator4 = (0, _getIterator3.default)(_array), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+    for (var _iterator4 = _array[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
       var v = _step4.value;
 
       _map.set(v, defaultValue);
@@ -465,14 +444,14 @@ function arrayToMap(_array, defaultValue) {
 }
 
 function flipMap(_srcMap) {
-  var _outMap = new _map3.default();
+  var _outMap = new Map();
   var _iteratorNormalCompletion5 = true;
   var _didIteratorError5 = false;
   var _iteratorError5 = undefined;
 
   try {
-    for (var _iterator5 = (0, _getIterator3.default)(_srcMap), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-      var _step5$value = (0, _slicedToArray3.default)(_step5.value, 2);
+    for (var _iterator5 = _srcMap[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+      var _step5$value = _slicedToArray(_step5.value, 2);
 
       var oldKey = _step5$value[0];
       var vToKey = _step5$value[1];

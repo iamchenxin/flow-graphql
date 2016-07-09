@@ -4,13 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 exports.valueFromAST = valueFromAST;
 
@@ -89,7 +91,7 @@ function valueFromAST(valueAST, type, variables) {
       };
     }();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object") return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   }
 
   if (type instanceof _definition.GraphQLInputObjectType) {
@@ -104,7 +106,7 @@ function valueFromAST(valueAST, type, variables) {
         return field.name.value;
       });
       return {
-        v: (0, _keys2.default)(fields).reduce(function (obj, fieldName) {
+        v: Object.keys(fields).reduce(function (obj, fieldName) {
           var field = fields[fieldName];
           var fieldAST = fieldASTs[fieldName];
           var fieldValue = valueFromAST(fieldAST && fieldAST.value, field.type, variables);
@@ -119,7 +121,7 @@ function valueFromAST(valueAST, type, variables) {
       };
     }();
 
-    if ((typeof _ret2 === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret2)) === "object") return _ret2.v;
+    if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
   }
 
   (0, _invariant2.default)(type instanceof _definition.GraphQLScalarType || type instanceof _definition.GraphQLEnumType, 'Must be input type');
@@ -129,12 +131,4 @@ function valueFromAST(valueAST, type, variables) {
     return parsed;
   }
 }
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
 //# sourceMappingURL=valueFromAST.js.map

@@ -5,14 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.specifiedDirectives = exports.GraphQLDeprecatedDirective = exports.DEFAULT_DEPRECATION_REASON = exports.GraphQLSkipDirective = exports.GraphQLIncludeDirective = exports.GraphQLDirective = exports.DirectiveLocation = undefined;
 
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
 var _definition = require('./definition');
 
 var _scalars = require('./scalars');
@@ -25,6 +17,7 @@ var _assertValidName = require('../utilities/assertValidName');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 /**
  *  Copyright (c) 2015, Facebook, Inc.
  *  All rights reserved.
@@ -65,7 +58,7 @@ var DirectiveLocation = exports.DirectiveLocation = {
  */
 
 var GraphQLDirective = exports.GraphQLDirective = function GraphQLDirective(config) {
-  (0, _classCallCheck3.default)(this, GraphQLDirective);
+  _classCallCheck(this, GraphQLDirective);
 
   (0, _invariant2.default)(config.name, 'Directive must be named.');
   (0, _assertValidName.assertValidName)(config.name);
@@ -79,10 +72,10 @@ var GraphQLDirective = exports.GraphQLDirective = function GraphQLDirective(conf
     this.args = [];
   } else {
     (0, _invariant2.default)(!Array.isArray(args), '@' + config.name + ' args must be an object with argument names as keys.');
-    this.args = (0, _keys2.default)(args).map(function (argName) {
+    this.args = Object.keys(args).map(function (argName) {
       (0, _assertValidName.assertValidName)(argName);
       var arg = args[argName];
-      (0, _invariant2.default)((0, _definition.isInputType)(arg.type), '@' + config.name + '(' + argName + ':) argument type must be ' + ('Input Type but got: ' + arg.type + '.'));
+      (0, _invariant2.default)((0, _definition.isInputType)(arg.type), '@' + config.name + '(' + argName + ':) argument type must be ' + ('Input Type but got: ' + String(arg.type) + '.'));
       return {
         name: argName,
         description: arg.description === undefined ? null : arg.description,

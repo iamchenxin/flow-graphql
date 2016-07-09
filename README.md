@@ -3,7 +3,11 @@
 Add flow-type outputs for [Graphql v0.6.0](https://github.com/graphql/graphql-js)
 
 # Changelog
-v0.6.3 (Graphql v0.6.0)
+## v0.6.5 (Graphql v0.6.1)
+ update to the latest master (Graphql v0.6.1) 
+ update Flow to 0.28
+
+## v0.6.3 (Graphql v0.6.0)
 printSchema to this
 ```
 type printStyle = 'alphabet' | 'hierarchy';

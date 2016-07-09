@@ -4,29 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _create = require('babel-runtime/core-js/object/create');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _create2 = _interopRequireDefault(_create);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _map = require('babel-runtime/core-js/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 exports.fieldsConflictMessage = fieldsConflictMessage;
 exports.OverlappingFieldsCanBeMerged = OverlappingFieldsCanBeMerged;
@@ -47,22 +35,16 @@ var _typeFromAST = require('../../utilities/typeFromAST');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 function fieldsConflictMessage(responseName, reason) {
   return 'Fields "' + responseName + '" conflict because ' + reasonMessage(reason) + '. Use different aliases on the fields to fetch both if this was ' + 'intentional.';
 }
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
 
 function reasonMessage(reason) {
   if (Array.isArray(reason)) {
     return reason.map(function (_ref) {
-      var _ref2 = (0, _slicedToArray3.default)(_ref, 2);
+      var _ref2 = _slicedToArray(_ref, 2);
 
       var responseName = _ref2[0];
       var subreason = _ref2[1];
@@ -88,15 +70,15 @@ function OverlappingFieldsCanBeMerged(context) {
   // A cache for the "field map" and list of fragment names found in any given
   // selection set. Selection sets may be asked for this information multiple
   // times, so this improves the performance of this validator.
-  var cachedFieldsAndFragmentNames = new _map2.default();
+  var cachedFieldsAndFragmentNames = new Map();
 
   return {
     SelectionSet: function SelectionSet(selectionSet) {
       var conflicts = findConflictsWithinSelectionSet(context, cachedFieldsAndFragmentNames, comparedFragments, context.getParentType(), selectionSet);
       conflicts.forEach(function (_ref3) {
-        var _ref4 = (0, _slicedToArray3.default)(_ref3, 3);
+        var _ref4 = _slicedToArray(_ref3, 3);
 
-        var _ref4$ = (0, _slicedToArray3.default)(_ref4[0], 2);
+        var _ref4$ = _slicedToArray(_ref4[0], 2);
 
         var responseName = _ref4$[0];
         var reason = _ref4$[1];
@@ -178,7 +160,7 @@ function findConflictsWithinSelectionSet(context, cachedFieldsAndFragmentNames, 
 
   var _getFieldsAndFragment = getFieldsAndFragmentNames(context, cachedFieldsAndFragmentNames, parentType, selectionSet);
 
-  var _getFieldsAndFragment2 = (0, _slicedToArray3.default)(_getFieldsAndFragment, 2);
+  var _getFieldsAndFragment2 = _slicedToArray(_getFieldsAndFragment, 2);
 
   var fieldMap = _getFieldsAndFragment2[0];
   var fragmentNames = _getFieldsAndFragment2[1];
@@ -213,7 +195,7 @@ function collectConflictsBetweenFieldsAndFragment(context, conflicts, cachedFiel
 
   var _getReferencedFieldsA = getReferencedFieldsAndFragmentNames(context, cachedFieldsAndFragmentNames, fragment);
 
-  var _getReferencedFieldsA2 = (0, _slicedToArray3.default)(_getReferencedFieldsA, 2);
+  var _getReferencedFieldsA2 = _slicedToArray(_getReferencedFieldsA, 2);
 
   var fieldMap2 = _getReferencedFieldsA2[0];
   var fragmentNames2 = _getReferencedFieldsA2[1];
@@ -252,14 +234,14 @@ function collectConflictsBetweenFragments(context, conflicts, cachedFieldsAndFra
 
   var _getReferencedFieldsA3 = getReferencedFieldsAndFragmentNames(context, cachedFieldsAndFragmentNames, fragment1);
 
-  var _getReferencedFieldsA4 = (0, _slicedToArray3.default)(_getReferencedFieldsA3, 2);
+  var _getReferencedFieldsA4 = _slicedToArray(_getReferencedFieldsA3, 2);
 
   var fieldMap1 = _getReferencedFieldsA4[0];
   var fragmentNames1 = _getReferencedFieldsA4[1];
 
   var _getReferencedFieldsA5 = getReferencedFieldsAndFragmentNames(context, cachedFieldsAndFragmentNames, fragment2);
 
-  var _getReferencedFieldsA6 = (0, _slicedToArray3.default)(_getReferencedFieldsA5, 2);
+  var _getReferencedFieldsA6 = _slicedToArray(_getReferencedFieldsA5, 2);
 
   var fieldMap2 = _getReferencedFieldsA6[0];
   var fragmentNames2 = _getReferencedFieldsA6[1];
@@ -290,14 +272,14 @@ function findConflictsBetweenSubSelectionSets(context, cachedFieldsAndFragmentNa
 
   var _getFieldsAndFragment3 = getFieldsAndFragmentNames(context, cachedFieldsAndFragmentNames, parentType1, selectionSet1);
 
-  var _getFieldsAndFragment4 = (0, _slicedToArray3.default)(_getFieldsAndFragment3, 2);
+  var _getFieldsAndFragment4 = _slicedToArray(_getFieldsAndFragment3, 2);
 
   var fieldMap1 = _getFieldsAndFragment4[0];
   var fragmentNames1 = _getFieldsAndFragment4[1];
 
   var _getFieldsAndFragment5 = getFieldsAndFragmentNames(context, cachedFieldsAndFragmentNames, parentType2, selectionSet2);
 
-  var _getFieldsAndFragment6 = (0, _slicedToArray3.default)(_getFieldsAndFragment5, 2);
+  var _getFieldsAndFragment6 = _slicedToArray(_getFieldsAndFragment5, 2);
 
   var fieldMap2 = _getFieldsAndFragment6[0];
   var fragmentNames2 = _getFieldsAndFragment6[1];
@@ -335,7 +317,7 @@ function collectConflictsWithin(context, conflicts, cachedFieldsAndFragmentNames
   // name and the value at that key is a list of all fields which provide that
   // response name. For every response name, if there are multiple fields, they
   // must be compared to find a potential conflict.
-  (0, _keys2.default)(fieldMap).forEach(function (responseName) {
+  Object.keys(fieldMap).forEach(function (responseName) {
     var fields = fieldMap[responseName];
     // This compares every field in the list to every other field in this list
     // (except to itself). If the list only has one item, nothing needs to
@@ -365,7 +347,7 @@ function collectConflictsBetween(context, conflicts, cachedFieldsAndFragmentName
   // response name. For any response name which appears in both provided field
   // maps, each field from the first field map must be compared to every field
   // in the second field map to find potential conflicts.
-  (0, _keys2.default)(fieldMap1).forEach(function (responseName) {
+  Object.keys(fieldMap1).forEach(function (responseName) {
     var fields2 = fieldMap2[responseName];
     if (fields2) {
       var fields1 = fieldMap1[responseName];
@@ -384,13 +366,13 @@ function collectConflictsBetween(context, conflicts, cachedFieldsAndFragmentName
 // Determines if there is a conflict between two particular fields, including
 // comparing their sub-fields.
 function findConflict(context, cachedFieldsAndFragmentNames, comparedFragments, parentFieldsAreMutuallyExclusive, responseName, field1, field2) {
-  var _field = (0, _slicedToArray3.default)(field1, 3);
+  var _field = _slicedToArray(field1, 3);
 
   var parentType1 = _field[0];
   var ast1 = _field[1];
   var def1 = _field[2];
 
-  var _field2 = (0, _slicedToArray3.default)(field2, 3);
+  var _field2 = _slicedToArray(field2, 3);
 
   var parentType2 = _field2[0];
   var ast2 = _field2[1];
@@ -426,7 +408,7 @@ function findConflict(context, cachedFieldsAndFragmentNames, comparedFragments, 
   }
 
   if (type1 && type2 && doTypesConflict(type1, type2)) {
-    return [[responseName, 'they return conflicting types ' + type1 + ' and ' + type2], [ast1], [ast2]];
+    return [[responseName, 'they return conflicting types ' + String(type1) + ' and ' + String(type2)], [ast1], [ast2]];
   }
 
   // Collect and compare sub-fields. Use the same "visited fragment names" list
@@ -490,7 +472,7 @@ function getFieldsAndFragmentNames(context, cachedFieldsAndFragmentNames, parent
     var astAndDefs = {};
     var fragmentNames = {};
     _collectFieldsAndFragmentNames(context, parentType, selectionSet, astAndDefs, fragmentNames);
-    cached = [astAndDefs, (0, _keys2.default)(fragmentNames)];
+    cached = [astAndDefs, Object.keys(fragmentNames)];
     cachedFieldsAndFragmentNames.set(selectionSet, cached);
   }
   return cached;
@@ -542,17 +524,17 @@ function _collectFieldsAndFragmentNames(context, parentType, selectionSet, astAn
 function subfieldConflicts(conflicts, responseName, ast1, ast2) {
   if (conflicts.length > 0) {
     return [[responseName, conflicts.map(function (_ref5) {
-      var _ref6 = (0, _slicedToArray3.default)(_ref5, 1);
+      var _ref6 = _slicedToArray(_ref5, 1);
 
       var reason = _ref6[0];
       return reason;
     })], conflicts.reduce(function (allFields, _ref7) {
-      var _ref8 = (0, _slicedToArray3.default)(_ref7, 2);
+      var _ref8 = _slicedToArray(_ref7, 2);
 
       var fields1 = _ref8[1];
       return allFields.concat(fields1);
     }, [ast1]), conflicts.reduce(function (allFields, _ref9) {
-      var _ref10 = (0, _slicedToArray3.default)(_ref9, 3);
+      var _ref10 = _slicedToArray(_ref9, 3);
 
       var fields2 = _ref10[2];
       return allFields.concat(fields2);
@@ -567,12 +549,12 @@ function subfieldConflicts(conflicts, responseName, ast1, ast2) {
 
 var PairSet = function () {
   function PairSet() {
-    (0, _classCallCheck3.default)(this, PairSet);
+    _classCallCheck(this, PairSet);
 
-    this._data = (0, _create2.default)(null);
+    this._data = Object.create(null);
   }
 
-  (0, _createClass3.default)(PairSet, [{
+  _createClass(PairSet, [{
     key: 'has',
     value: function has(a, b, areMutuallyExclusive) {
       var first = this._data[a];
@@ -595,13 +577,14 @@ var PairSet = function () {
       _pairSetAdd(this._data, b, a, areMutuallyExclusive);
     }
   }]);
+
   return PairSet;
 }();
 
 function _pairSetAdd(data, a, b, areMutuallyExclusive) {
   var map = data[a];
   if (!map) {
-    map = (0, _create2.default)(null);
+    map = Object.create(null);
     data[a] = map;
   }
   map[b] = areMutuallyExclusive;

@@ -4,17 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _create = require('babel-runtime/core-js/object/create');
-
-var _create2 = _interopRequireDefault(_create);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 exports.undefinedFieldMessage = undefinedFieldMessage;
 exports.FieldsOnCorrectType = FieldsOnCorrectType;
@@ -50,16 +48,6 @@ function undefinedFieldMessage(fieldName, type, suggestedTypeNames, suggestedFie
  * A GraphQL document is only valid if all fields selected are defined by the
  * parent type, or are an allowed meta field such as __typenamme
  */
-
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 function FieldsOnCorrectType(context) {
   return {
     Field: function Field(node) {
@@ -93,7 +81,7 @@ function getSuggestedTypeNames(schema, type, fieldName) {
   if (type instanceof _definition.GraphQLInterfaceType || type instanceof _definition.GraphQLUnionType) {
     var _ret = function () {
       var suggestedObjectTypes = [];
-      var interfaceUsageCount = (0, _create2.default)(null);
+      var interfaceUsageCount = Object.create(null);
       schema.getPossibleTypes(type).forEach(function (possibleType) {
         if (!possibleType.getFields()[fieldName]) {
           return;
@@ -110,7 +98,7 @@ function getSuggestedTypeNames(schema, type, fieldName) {
       });
 
       // Suggest interface types based on how common they are.
-      var suggestedInterfaceTypes = (0, _keys2.default)(interfaceUsageCount).sort(function (a, b) {
+      var suggestedInterfaceTypes = Object.keys(interfaceUsageCount).sort(function (a, b) {
         return interfaceUsageCount[b] - interfaceUsageCount[a];
       });
 
@@ -120,7 +108,7 @@ function getSuggestedTypeNames(schema, type, fieldName) {
       };
     }();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object") return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   }
 
   // Otherwise, must be an Object type, which does not have possible fields.
@@ -133,7 +121,7 @@ function getSuggestedTypeNames(schema, type, fieldName) {
  */
 function getSuggestedFieldNames(schema, type, fieldName) {
   if (type instanceof _definition.GraphQLObjectType || type instanceof _definition.GraphQLInterfaceType) {
-    var possibleFieldNames = (0, _keys2.default)(type.getFields());
+    var possibleFieldNames = Object.keys(type.getFields());
     return (0, _suggestionList2.default)(fieldName, possibleFieldNames);
   }
   // Otherwise, must be a Union type, which does not define fields.

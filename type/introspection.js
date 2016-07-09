@@ -5,13 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TypeNameMetaFieldDef = exports.TypeMetaFieldDef = exports.SchemaMetaFieldDef = exports.__TypeKind = exports.TypeKind = exports.__EnumValue = exports.__InputValue = exports.__Field = exports.__Type = exports.__DirectiveLocation = exports.__Directive = exports.__Schema = undefined;
 
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 var _isNullish = require('../jsutils/isNullish');
 
@@ -29,15 +31,6 @@ var _directives = require('./directives');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 var __Schema = exports.__Schema = new _definition.GraphQLObjectType({
   name: '__Schema',
   description: 'A GraphQL Schema defines the capabilities of a GraphQL server. It ' + 'exposes all available types and directives on the server, as well as ' + 'the entry points for query, mutation, and subscription operations.',
@@ -48,7 +41,7 @@ var __Schema = exports.__Schema = new _definition.GraphQLObjectType({
         type: new _definition.GraphQLNonNull(new _definition.GraphQLList(new _definition.GraphQLNonNull(__Type))),
         resolve: function resolve(schema) {
           var typeMap = schema.getTypeMap();
-          return (0, _keys2.default)(typeMap).map(function (key) {
+          return Object.keys(typeMap).map(function (key) {
             return typeMap[key];
           });
         }
@@ -248,7 +241,7 @@ var __Type = exports.__Type = new _definition.GraphQLObjectType({
           if (type instanceof _definition.GraphQLObjectType || type instanceof _definition.GraphQLInterfaceType) {
             var _ret = function () {
               var fieldMap = type.getFields();
-              var fields = (0, _keys2.default)(fieldMap).map(function (fieldName) {
+              var fields = Object.keys(fieldMap).map(function (fieldName) {
                 return fieldMap[fieldName];
               });
               if (!includeDeprecated) {
@@ -261,7 +254,7 @@ var __Type = exports.__Type = new _definition.GraphQLObjectType({
               };
             }();
 
-            if ((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object") return _ret.v;
+            if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
           }
           return null;
         }
@@ -310,13 +303,13 @@ var __Type = exports.__Type = new _definition.GraphQLObjectType({
             var _ret2 = function () {
               var fieldMap = type.getFields();
               return {
-                v: (0, _keys2.default)(fieldMap).map(function (fieldName) {
+                v: Object.keys(fieldMap).map(function (fieldName) {
                   return fieldMap[fieldName];
                 })
               };
             }();
 
-            if ((typeof _ret2 === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret2)) === "object") return _ret2.v;
+            if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
           }
         }
       },

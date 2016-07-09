@@ -27,7 +27,11 @@ var _values = require('../execution/values');
 
 var _kinds = require('../language/kinds');
 
-var _type = require('../type');
+var _schema = require('../type/schema');
+
+var _scalars = require('../type/scalars');
+
+var _definition = require('../type/definition');
 
 var _directives = require('../type/directives');
 
@@ -46,12 +50,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function buildWrappedType(innerType, inputTypeAST) {
   if (inputTypeAST.kind === _kinds.LIST_TYPE) {
-    return new _type.GraphQLList(buildWrappedType(innerType, inputTypeAST.type));
+    return new _definition.GraphQLList(buildWrappedType(innerType, inputTypeAST.type));
   }
   if (inputTypeAST.kind === _kinds.NON_NULL_TYPE) {
     var wrappedType = buildWrappedType(innerType, inputTypeAST.type);
-    (0, _invariant2.default)(!(wrappedType instanceof _type.GraphQLNonNull), 'No nesting nonnull.');
-    return new _type.GraphQLNonNull(wrappedType);
+    (0, _invariant2.default)(!(wrappedType instanceof _definition.GraphQLNonNull), 'No nesting nonnull.');
+    return new _definition.GraphQLNonNull(wrappedType);
   }
   return innerType;
 }
@@ -152,11 +156,11 @@ function buildASTSchema(ast) {
   }
 
   var innerTypeMap = {
-    String: _type.GraphQLString,
-    Int: _type.GraphQLInt,
-    Float: _type.GraphQLFloat,
-    Boolean: _type.GraphQLBoolean,
-    ID: _type.GraphQLID,
+    String: _scalars.GraphQLString,
+    Int: _scalars.GraphQLInt,
+    Float: _scalars.GraphQLFloat,
+    Boolean: _scalars.GraphQLBoolean,
+    ID: _scalars.GraphQLID,
     __Schema: _introspection.__Schema,
     __Directive: _introspection.__Directive,
     __DirectiveLocation: _introspection.__DirectiveLocation,
@@ -192,7 +196,7 @@ function buildASTSchema(ast) {
     directives.push(_directives.GraphQLDeprecatedDirective);
   }
 
-  return new _type.GraphQLSchema({
+  return new _schema.GraphQLSchema({
     query: getObjectType(astMap[queryTypeName]),
     mutation: mutationTypeName ? getObjectType(astMap[mutationTypeName]) : null,
     subscription: subscriptionTypeName ? getObjectType(astMap[subscriptionTypeName]) : null,
@@ -206,20 +210,44 @@ function buildASTSchema(ast) {
       locations: directiveAST.locations.map(function (node) {
         return node.value;
       }),
-      args: makeInputValues(directiveAST.arguments)
+      args: directiveAST.arguments && makeInputValues(directiveAST.arguments)
     });
   }
 
   function getObjectType(typeAST) {
     var type = typeDefNamed(typeAST.name.value);
-    (0, _invariant2.default)(type instanceof _type.GraphQLObjectType, 'AST must provide object type.');
+    (0, _invariant2.default)(type instanceof _definition.GraphQLObjectType, 'AST must provide object type.');
     return type;
   }
 
-  function produceTypeDef(typeAST) {
+  function produceType(typeAST) {
     var typeName = getNamedTypeAST(typeAST).name.value;
     var typeDef = typeDefNamed(typeName);
     return buildWrappedType(typeDef, typeAST);
+  }
+
+  function produceInputType(typeAST) {
+    var type = produceType(typeAST);
+    (0, _invariant2.default)((0, _definition.isInputType)(type), 'Expected Input type.');
+    return type;
+  }
+
+  function produceOutputType(typeAST) {
+    var type = produceType(typeAST);
+    (0, _invariant2.default)((0, _definition.isOutputType)(type), 'Expected Output type.');
+    return type;
+  }
+
+  function produceObjectType(typeAST) {
+    var type = produceType(typeAST);
+    (0, _invariant2.default)(type instanceof _definition.GraphQLObjectType, 'Expected Object type.');
+    return type;
+  }
+
+  function produceInterfaceType(typeAST) {
+    var type = produceType(typeAST);
+    (0, _invariant2.default)(type instanceof _definition.GraphQLInterfaceType, 'Expected Object type.');
+    return type;
   }
 
   function typeDefNamed(typeName) {
@@ -272,7 +300,7 @@ function buildASTSchema(ast) {
         return makeImplementedInterfaces(def);
       }
     };
-    return new _type.GraphQLObjectType(config);
+    return new _definition.GraphQLObjectType(config);
   }
 
   function makeFieldDefMap(def) {
@@ -280,7 +308,7 @@ function buildASTSchema(ast) {
       return field.name.value;
     }, function (field) {
       return {
-        type: produceTypeDef(field.type),
+        type: produceOutputType(field.type),
         args: makeInputValues(field.arguments),
         deprecationReason: getDeprecationReason(field.directives)
       };
@@ -288,8 +316,8 @@ function buildASTSchema(ast) {
   }
 
   function makeImplementedInterfaces(def) {
-    return def.interfaces.map(function (inter) {
-      return produceTypeDef(inter);
+    return def.interfaces && def.interfaces.map(function (iface) {
+      return produceInterfaceType(iface);
     });
   }
 
@@ -297,7 +325,7 @@ function buildASTSchema(ast) {
     return (0, _keyValMap2.default)(values, function (value) {
       return value.name.value;
     }, function (value) {
-      var type = produceTypeDef(value.type);
+      var type = produceInputType(value.type);
       return { type: type, defaultValue: (0, _valueFromAST.valueFromAST)(value.defaultValue, type) };
     });
   }
@@ -313,11 +341,11 @@ function buildASTSchema(ast) {
         return makeFieldDefMap(def);
       }
     };
-    return new _type.GraphQLInterfaceType(config);
+    return new _definition.GraphQLInterfaceType(config);
   }
 
   function makeEnumDef(def) {
-    var enumType = new _type.GraphQLEnumType({
+    var enumType = new _definition.GraphQLEnumType({
       name: def.name.value,
       values: (0, _keyValMap2.default)(def.values, function (enumValue) {
         return enumValue.name.value;
@@ -332,19 +360,19 @@ function buildASTSchema(ast) {
   }
 
   function makeUnionDef(def) {
-    return new _type.GraphQLUnionType({
+    return new _definition.GraphQLUnionType({
       name: def.name.value,
       resolveType: function resolveType() {
         return null;
       },
       types: def.types.map(function (t) {
-        return produceTypeDef(t);
+        return produceObjectType(t);
       })
     });
   }
 
   function makeScalarDef(def) {
-    return new _type.GraphQLScalarType({
+    return new _definition.GraphQLScalarType({
       name: def.name.value,
       serialize: function serialize() {
         return null;
@@ -363,7 +391,7 @@ function buildASTSchema(ast) {
   }
 
   function makeInputObjectDef(def) {
-    return new _type.GraphQLInputObjectType({
+    return new _definition.GraphQLInputObjectType({
       name: def.name.value,
       fields: function fields() {
         return makeInputValues(def.fields);

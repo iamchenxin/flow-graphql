@@ -5,13 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TypeInfo = undefined;
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 var _kinds = require('../language/kinds');
 
@@ -27,9 +29,11 @@ var _find = require('../jsutils/find');
 
 var _find2 = _interopRequireDefault(_find);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * TypeInfo is a utility class which, given a GraphQL schema, can keep track
@@ -42,7 +46,7 @@ var TypeInfo = exports.TypeInfo = function () {
   // NOTE: this experimental optional second parameter is only needed in order
   // to support non-spec-compliant codebases. You should never need to use it.
   getFieldDefFn) {
-    (0, _classCallCheck3.default)(this, TypeInfo);
+    _classCallCheck(this, TypeInfo);
 
     this._schema = schema;
     this._typeStack = [];
@@ -54,7 +58,7 @@ var TypeInfo = exports.TypeInfo = function () {
     this._getFieldDef = getFieldDefFn || getFieldDef;
   }
 
-  (0, _createClass3.default)(TypeInfo, [{
+  _createClass(TypeInfo, [{
     key: 'getType',
     value: function getType() {
       if (this._typeStack.length > 0) {
@@ -205,6 +209,7 @@ var TypeInfo = exports.TypeInfo = function () {
       }
     }
   }]);
+
   return TypeInfo;
 }();
 
@@ -212,15 +217,6 @@ var TypeInfo = exports.TypeInfo = function () {
  * Not exactly the same as the executor's definition of getFieldDef, in this
  * statically evaluated environment we do not always have an Object type,
  * and need to handle Interface and Union types.
- */
-
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
  */
 
 function getFieldDef(schema, parentType, fieldAST) {

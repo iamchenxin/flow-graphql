@@ -3,11 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
 exports.unknownTypeMessage = unknownTypeMessage;
 exports.KnownTypeNames = KnownTypeNames;
 
@@ -33,7 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 function unknownTypeMessage(type, suggestedTypes) {
-  var message = 'Unknown type "' + type + '".';
+  var message = 'Unknown type "' + String(type) + '".';
   if (suggestedTypes.length) {
     message += ' Did you mean ' + (0, _quotedOrList2.default)(suggestedTypes) + '?';
   }
@@ -68,7 +63,7 @@ function KnownTypeNames(context) {
       var typeName = node.name.value;
       var type = schema.getType(typeName);
       if (!type) {
-        context.reportError(new _error.GraphQLError(unknownTypeMessage(typeName, (0, _suggestionList2.default)(typeName, (0, _keys2.default)(schema.getTypeMap()))), [node]));
+        context.reportError(new _error.GraphQLError(unknownTypeMessage(typeName, (0, _suggestionList2.default)(typeName, Object.keys(schema.getTypeMap()))), [node]));
       }
     }
   };

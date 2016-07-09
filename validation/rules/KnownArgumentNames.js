@@ -30,7 +30,7 @@ var _kinds = require('../../language/kinds');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function unknownArgMessage(argName, fieldName, type, suggestedArgs) {
-  var message = 'Unknown argument "' + argName + '" on field "' + fieldName + '" of ' + ('type "' + type + '".');
+  var message = 'Unknown argument "' + argName + '" on field "' + fieldName + '" of ' + ('type "' + String(type) + '".');
   if (suggestedArgs.length) {
     message += ' Did you mean ' + (0, _quotedOrList2.default)(suggestedArgs) + '?';
   }

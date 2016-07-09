@@ -18,13 +18,15 @@ import { GraphQLError } from './GraphQLError';
  */
 export function locatedError(
   originalError: ?Error,
-  nodes: Array<any>
+  nodes: Array<any>,
+  path: Array<string | number>
 ): GraphQLError {
   const message = originalError ?
     originalError.message || String(originalError) :
     'An unknown error occurred.';
   const stack = originalError ? originalError.stack : null;
   const error = new GraphQLError(message, nodes, stack);
+  error.path = path;
   error.originalError = originalError;
   return error;
 }

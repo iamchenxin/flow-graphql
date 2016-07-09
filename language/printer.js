@@ -3,16 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _stringify = require('babel-runtime/core-js/json/stringify');
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
 exports.print = print;
 
 var _visitor = require('./visitor');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Converts an AST into a string, using one set of reasonable
@@ -116,11 +109,11 @@ var printDocASTReducer = {
   },
   StringValue: function StringValue(_ref10) {
     var value = _ref10.value;
-    return (0, _stringify2.default)(value);
+    return JSON.stringify(value);
   },
   BooleanValue: function BooleanValue(_ref11) {
     var value = _ref11.value;
-    return (0, _stringify2.default)(value);
+    return JSON.stringify(value);
   },
   EnumValue: function EnumValue(_ref12) {
     var value = _ref12.value;

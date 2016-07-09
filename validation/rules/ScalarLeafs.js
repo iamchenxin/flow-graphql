@@ -12,7 +12,7 @@ var _error = require('../../error');
 var _definition = require('../../type/definition');
 
 function noSubselectionAllowedMessage(field, type) {
-  return 'Field "' + field + '" of type "' + type + '" must not have a sub selection.';
+  return 'Field "' + field + '" of type "' + String(type) + '" must not have a ' + 'sub selection.';
 }
 /**
  *  Copyright (c) 2015, Facebook, Inc.
@@ -24,7 +24,7 @@ function noSubselectionAllowedMessage(field, type) {
  */
 
 function requiredSubselectionMessage(field, type) {
-  return 'Field "' + field + '" of type "' + type + '" must have a sub selection.';
+  return 'Field "' + field + '" of type "' + String(type) + '" must have a ' + 'sub selection.';
 }
 
 /**

@@ -5,25 +5,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.GraphQLSchema = undefined;
 
-var _keys = require('babel-runtime/core-js/object/keys');
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _keys2 = _interopRequireDefault(_keys);
-
-var _create = require('babel-runtime/core-js/object/create');
-
-var _create2 = _interopRequireDefault(_create);
-
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 var _definition = require('./definition');
 
@@ -42,6 +34,8 @@ var _invariant2 = _interopRequireDefault(_invariant);
 var _typeComparators = require('../utilities/typeComparators');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Schema Definition
@@ -70,37 +64,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  */
 
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 var GraphQLSchema = exports.GraphQLSchema = function () {
   function GraphQLSchema(config) {
     var _this = this;
 
-    (0, _classCallCheck3.default)(this, GraphQLSchema);
+    _classCallCheck(this, GraphQLSchema);
 
-    (0, _invariant2.default)((typeof config === 'undefined' ? 'undefined' : (0, _typeof3.default)(config)) === 'object', 'Must provide configuration object.');
+    (0, _invariant2.default)((typeof config === 'undefined' ? 'undefined' : _typeof(config)) === 'object', 'Must provide configuration object.');
 
-    (0, _invariant2.default)(config.query instanceof _definition.GraphQLObjectType, 'Schema query must be Object Type but got: ' + config.query + '.');
+    (0, _invariant2.default)(config.query instanceof _definition.GraphQLObjectType, 'Schema query must be Object Type but got: ' + String(config.query) + '.');
     this._queryType = config.query;
 
-    (0, _invariant2.default)(!config.mutation || config.mutation instanceof _definition.GraphQLObjectType, 'Schema mutation must be Object Type if provided but got: ' + config.mutation + '.');
+    (0, _invariant2.default)(!config.mutation || config.mutation instanceof _definition.GraphQLObjectType, 'Schema mutation must be Object Type if provided but got: ' + String(config.mutation) + '.');
     this._mutationType = config.mutation;
 
-    (0, _invariant2.default)(!config.subscription || config.subscription instanceof _definition.GraphQLObjectType, 'Schema subscription must be Object Type if provided but got: ' + config.subscription + '.');
+    (0, _invariant2.default)(!config.subscription || config.subscription instanceof _definition.GraphQLObjectType, 'Schema subscription must be Object Type if provided but got: ' + String(config.subscription) + '.');
     this._subscriptionType = config.subscription;
 
-    (0, _invariant2.default)(!config.types || Array.isArray(config.types), 'Schema types must be Array if provided but got: ' + config.types + '.');
+    (0, _invariant2.default)(!config.types || Array.isArray(config.types), 'Schema types must be Array if provided but got: ' + String(config.types) + '.');
 
     (0, _invariant2.default)(!config.directives || Array.isArray(config.directives) && config.directives.every(function (directive) {
       return directive instanceof _directives.GraphQLDirective;
-    }), 'Schema directives must be Array<GraphQLDirective> if provided but got: ' + config.directives + '.');
+    }), 'Schema directives must be Array<GraphQLDirective> if provided but got: ' + String(config.directives) + '.');
     // Provide specified directives (e.g. @include and @skip) by default.
     this._directives = config.directives || _directives.specifiedDirectives;
 
@@ -112,11 +97,11 @@ var GraphQLSchema = exports.GraphQLSchema = function () {
       initialTypes = initialTypes.concat(types);
     }
 
-    this._typeMap = initialTypes.reduce(typeMapReducer, (0, _create2.default)(null));
+    this._typeMap = initialTypes.reduce(typeMapReducer, Object.create(null));
 
     // Keep track of all implementations by interface name.
-    this._implementations = (0, _create2.default)(null);
-    (0, _keys2.default)(this._typeMap).forEach(function (typeName) {
+    this._implementations = Object.create(null);
+    Object.keys(this._typeMap).forEach(function (typeName) {
       var type = _this._typeMap[typeName];
       if (type instanceof _definition.GraphQLObjectType) {
         type.getInterfaces().forEach(function (iface) {
@@ -131,7 +116,7 @@ var GraphQLSchema = exports.GraphQLSchema = function () {
     });
 
     // Enforce correct interface implementations.
-    (0, _keys2.default)(this._typeMap).forEach(function (typeName) {
+    Object.keys(this._typeMap).forEach(function (typeName) {
       var type = _this._typeMap[typeName];
       if (type instanceof _definition.GraphQLObjectType) {
         type.getInterfaces().forEach(function (iface) {
@@ -141,7 +126,7 @@ var GraphQLSchema = exports.GraphQLSchema = function () {
     });
   }
 
-  (0, _createClass3.default)(GraphQLSchema, [{
+  _createClass(GraphQLSchema, [{
     key: 'getQueryType',
     value: function getQueryType() {
       return this._queryType;
@@ -180,15 +165,15 @@ var GraphQLSchema = exports.GraphQLSchema = function () {
     value: function isPossibleType(abstractType, possibleType) {
       var possibleTypeMap = this._possibleTypeMap;
       if (!possibleTypeMap) {
-        this._possibleTypeMap = possibleTypeMap = (0, _create2.default)(null);
+        this._possibleTypeMap = possibleTypeMap = Object.create(null);
       }
 
       if (!possibleTypeMap[abstractType.name]) {
         var possibleTypes = this.getPossibleTypes(abstractType);
-        (0, _invariant2.default)(Array.isArray(possibleTypes), 'Could not find possible implementing types for ' + abstractType + ' in ' + 'schema. Check that schema.types is defined and is an array of' + 'all possible types in the schema.');
+        (0, _invariant2.default)(Array.isArray(possibleTypes), 'Could not find possible implementing types for ' + abstractType.name + ' ' + 'in schema. Check that schema.types is defined and is an array of ' + 'all possible types in the schema.');
         possibleTypeMap[abstractType.name] = possibleTypes.reduce(function (map, type) {
           return map[type.name] = true, map;
-        }, (0, _create2.default)(null));
+        }, Object.create(null));
       }
 
       return Boolean(possibleTypeMap[abstractType.name][possibleType.name]);
@@ -206,6 +191,7 @@ var GraphQLSchema = exports.GraphQLSchema = function () {
       });
     }
   }]);
+
   return GraphQLSchema;
 }();
 
@@ -217,7 +203,7 @@ function typeMapReducer(map, type) {
     return typeMapReducer(map, type.ofType);
   }
   if (map[type.name]) {
-    (0, _invariant2.default)(map[type.name] === type, 'Schema must contain unique named types but contains multiple ' + ('types named "' + type + '".'));
+    (0, _invariant2.default)(map[type.name] === type, 'Schema must contain unique named types but contains multiple ' + ('types named "' + type.name + '".'));
     return map;
   }
   map[type.name] = type;
@@ -235,7 +221,7 @@ function typeMapReducer(map, type) {
   if (type instanceof _definition.GraphQLObjectType || type instanceof _definition.GraphQLInterfaceType || type instanceof _definition.GraphQLInputObjectType) {
     (function () {
       var fieldMap = type.getFields();
-      (0, _keys2.default)(fieldMap).forEach(function (fieldName) {
+      Object.keys(fieldMap).forEach(function (fieldName) {
         var field = fieldMap[fieldName];
 
         if (field.args) {
@@ -257,16 +243,16 @@ function assertObjectImplementsInterface(schema, object, iface) {
   var ifaceFieldMap = iface.getFields();
 
   // Assert each interface field is implemented.
-  (0, _keys2.default)(ifaceFieldMap).forEach(function (fieldName) {
+  Object.keys(ifaceFieldMap).forEach(function (fieldName) {
     var objectField = objectFieldMap[fieldName];
     var ifaceField = ifaceFieldMap[fieldName];
 
     // Assert interface field exists on object.
-    (0, _invariant2.default)(objectField, '"' + iface + '" expects field "' + fieldName + '" but "' + object + '" does not ' + 'provide it.');
+    (0, _invariant2.default)(objectField, '"' + iface.name + '" expects field "' + fieldName + '" but "' + object.name + '" ' + 'does not provide it.');
 
     // Assert interface field type is satisfied by object field type, by being
     // a valid subtype. (covariant)
-    (0, _invariant2.default)((0, _typeComparators.isTypeSubTypeOf)(schema, objectField.type, ifaceField.type), iface + '.' + fieldName + ' expects type "' + ifaceField.type + '" but ' + (object + '.' + fieldName + ' provides type "' + objectField.type + '".'));
+    (0, _invariant2.default)((0, _typeComparators.isTypeSubTypeOf)(schema, objectField.type, ifaceField.type), iface.name + '.' + fieldName + ' expects type "' + String(ifaceField.type) + '" ' + 'but ' + (object.name + '.' + fieldName + ' provides type "' + String(objectField.type) + '".'));
 
     // Assert each interface field arg is implemented.
     ifaceField.args.forEach(function (ifaceArg) {
@@ -276,11 +262,11 @@ function assertObjectImplementsInterface(schema, object, iface) {
       });
 
       // Assert interface field arg exists on object field.
-      (0, _invariant2.default)(objectArg, iface + '.' + fieldName + ' expects argument "' + argName + '" but ' + (object + '.' + fieldName + ' does not provide it.'));
+      (0, _invariant2.default)(objectArg, iface.name + '.' + fieldName + ' expects argument "' + argName + '" but ' + (object.name + '.' + fieldName + ' does not provide it.'));
 
       // Assert interface field arg type matches object field arg type.
       // (invariant)
-      (0, _invariant2.default)((0, _typeComparators.isEqualType)(ifaceArg.type, objectArg.type), iface + '.' + fieldName + '(' + argName + ':) expects type "' + ifaceArg.type + '" ' + ('but ' + object + '.' + fieldName + '(' + argName + ':) provides ') + ('type "' + objectArg.type + '".'));
+      (0, _invariant2.default)((0, _typeComparators.isEqualType)(ifaceArg.type, objectArg.type), iface.name + '.' + fieldName + '(' + argName + ':) expects type ' + ('"' + String(ifaceArg.type) + '" but ') + (object.name + '.' + fieldName + '(' + argName + ':) provides type ') + ('"' + String(objectArg.type) + '".'));
     });
 
     // Assert additional arguments must not be required.
@@ -290,7 +276,7 @@ function assertObjectImplementsInterface(schema, object, iface) {
         return arg.name === argName;
       });
       if (!ifaceArg) {
-        (0, _invariant2.default)(!(objectArg.type instanceof _definition.GraphQLNonNull), object + '.' + fieldName + '(' + argName + ':) is of required type ' + ('"' + objectArg.type + '" but is not also provided by the ') + ('interface ' + iface + '.' + fieldName + '.'));
+        (0, _invariant2.default)(!(objectArg.type instanceof _definition.GraphQLNonNull), object.name + '.' + fieldName + '(' + argName + ':) is of required type ' + ('"' + String(objectArg.type) + '" but is not also provided by the ') + ('interface ' + iface.name + '.' + fieldName + '.'));
       }
     });
   });

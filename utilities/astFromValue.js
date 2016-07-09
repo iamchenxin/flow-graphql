@@ -4,17 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _stringify = require('babel-runtime/core-js/json/stringify');
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 exports.astFromValue = astFromValue;
 
@@ -80,7 +78,7 @@ function astFromValue(value, type) {
       };
     }();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object") return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   } else if (type instanceof _definition.GraphQLList) {
     // Because GraphQL will accept single values as a "list of one" when
     // expecting a list, if there's a non-array value and an expected list type,
@@ -117,17 +115,17 @@ function astFromValue(value, type) {
     // then remove the quotes.
     return {
       kind: _kinds.STRING,
-      value: (0, _stringify2.default)(_value).slice(1, -1)
+      value: JSON.stringify(_value).slice(1, -1)
     };
   }
 
   // last remaining possible typeof
-  (0, _invariant2.default)((typeof _value === 'undefined' ? 'undefined' : (0, _typeof3.default)(_value)) === 'object' && _value !== null);
+  (0, _invariant2.default)((typeof _value === 'undefined' ? 'undefined' : _typeof(_value)) === 'object' && _value !== null);
 
   // Populate the fields of the input object by creating ASTs from each value
   // in the JavaScript object.
   var fields = [];
-  (0, _keys2.default)(_value).forEach(function (fieldName) {
+  Object.keys(_value).forEach(function (fieldName) {
     var fieldType = undefined;
     if (type instanceof _definition.GraphQLInputObjectType) {
       var fieldDef = type.getFields()[fieldName];
@@ -144,12 +142,4 @@ function astFromValue(value, type) {
   });
   return { kind: _kinds.OBJECT, fields: fields };
 }
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
 //# sourceMappingURL=astFromValue.js.map

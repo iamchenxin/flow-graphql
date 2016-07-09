@@ -99,9 +99,9 @@ function parseDefinition(parser) {
 
   if (peek(parser, _lexer.TokenKind.NAME)) {
     switch (parser.token.value) {
+      // Note: subscription is an experimental non-spec addition.
       case 'query':
       case 'mutation':
-      // Note: subscription is an experimental non-spec addition.
       case 'subscription':
         return parseOperationDefinition(parser);
 

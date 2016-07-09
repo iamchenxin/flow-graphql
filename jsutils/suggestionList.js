@@ -3,18 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _keys = require("babel-runtime/core-js/object/keys");
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _create = require("babel-runtime/core-js/object/create");
-
-var _create2 = _interopRequireDefault(_create);
-
 exports.default = suggestionList;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  *  Copyright (c) 2015, Facebook, Inc.
@@ -30,7 +19,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * list of valid options sorted based on their similarity with the input.
  */
 function suggestionList(input, options) {
-  var optionsByDistance = (0, _create2.default)(null);
+  var optionsByDistance = Object.create(null);
   var oLength = options.length;
   var inputThreshold = input.length / 2;
   for (var i = 0; i < oLength; i++) {
@@ -40,7 +29,7 @@ function suggestionList(input, options) {
       optionsByDistance[options[i]] = distance;
     }
   }
-  return (0, _keys2.default)(optionsByDistance).sort(function (a, b) {
+  return Object.keys(optionsByDistance).sort(function (a, b) {
     return optionsByDistance[a] - optionsByDistance[b];
   });
 }

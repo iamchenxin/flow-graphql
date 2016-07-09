@@ -5,21 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ValidationContext = undefined;
 
-var _create = require('babel-runtime/core-js/object/create');
-
-var _create2 = _interopRequireDefault(_create);
-
-var _map = require('babel-runtime/core-js/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 exports.validate = validate;
 exports.visitUsingRules = visitUsingRules;
@@ -45,6 +39,8 @@ var _specifiedRules = require('./specifiedRules');
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Implements the "Validation" section of the spec.
@@ -73,16 +69,6 @@ function validate(schema, ast, rules) {
  *
  * @internal
  */
-
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 function visitUsingRules(schema, typeInfo, documentAST, rules) {
   var context = new ValidationContext(schema, documentAST, typeInfo);
   var visitors = rules.map(function (rule) {
@@ -101,19 +87,19 @@ function visitUsingRules(schema, typeInfo, documentAST, rules) {
 
 var ValidationContext = exports.ValidationContext = function () {
   function ValidationContext(schema, ast, typeInfo) {
-    (0, _classCallCheck3.default)(this, ValidationContext);
+    _classCallCheck(this, ValidationContext);
 
     this._schema = schema;
     this._ast = ast;
     this._typeInfo = typeInfo;
     this._errors = [];
-    this._fragmentSpreads = new _map2.default();
-    this._recursivelyReferencedFragments = new _map2.default();
-    this._variableUsages = new _map2.default();
-    this._recursiveVariableUsages = new _map2.default();
+    this._fragmentSpreads = new Map();
+    this._recursivelyReferencedFragments = new Map();
+    this._variableUsages = new Map();
+    this._recursiveVariableUsages = new Map();
   }
 
-  (0, _createClass3.default)(ValidationContext, [{
+  _createClass(ValidationContext, [{
     key: 'reportError',
     value: function reportError(error) {
       this._errors.push(error);
@@ -175,7 +161,7 @@ var ValidationContext = exports.ValidationContext = function () {
       var fragments = this._recursivelyReferencedFragments.get(operation);
       if (!fragments) {
         fragments = [];
-        var collectedNames = (0, _create2.default)(null);
+        var collectedNames = Object.create(null);
         var nodesToVisit = [operation.selectionSet];
         while (nodesToVisit.length !== 0) {
           var _node = nodesToVisit.pop();
@@ -265,6 +251,7 @@ var ValidationContext = exports.ValidationContext = function () {
       return this._typeInfo.getArgument();
     }
   }]);
+
   return ValidationContext;
 }();
 //# sourceMappingURL=validate.js.map
