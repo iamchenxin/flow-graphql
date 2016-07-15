@@ -3,10 +3,7 @@
 Add flow-type outputs for [Graphql v0.6.0](https://github.com/graphql/graphql-js)
 
 # Changelog
-## v0.6.5 (Graphql v0.6.1)
- update to the latest master (Graphql v0.6.1) 
- update Flow to 0.28
-
+## v0.6.6
   `GraphQLObjectTypeConfig<TSource>` to `GraphQLFieldResolveFn<TSource, TResult>`
 Make user can do a whole top-bottom Flow check between their resolvers.
 With the Flow typed feature, user can ensure his data structure is correspond to schema . ex: [starWarsData.js L103](https://github.com/graphql/graphql-js/commit/046cbba2732be8bbbef74f988fffd04294b583c2#diff-e6e81fa96fbb4bdccb4e3f0042b5f1a3R103)
@@ -50,7 +47,9 @@ A simple demonstration:
 
 Note: Because in v0.61 ,in source code use a `any` type to force cast `TSource`. So it is user's responsibility to check the Data Type is not typo. In above code , if ` resolve: (src:DPost):DComment ` is typo to ` resolve: (src:DPost):DSomeAnotherType[] `(and user return a wrong data), Flow will still pass. Flow will not check `DSomeAnotherType` is `DComment`,cause of `DSomeAnotherType` -> `any` ->  `DComment`
 
-
+## v0.6.5 (Graphql v0.6.1)
+ update to the latest master (Graphql v0.6.1) 
+ update Flow to 0.28
 
 ## v0.6.3 (Graphql v0.6.0)
 printSchema to this
