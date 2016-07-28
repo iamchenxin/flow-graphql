@@ -151,7 +151,7 @@ var GraphQLScalarType = exports.GraphQLScalarType = function () {
     this._scalarConfig = config;
   }
 
-  // Serializes an internal value to include an a response.
+  // Serializes an internal value to include in a response.
 
   _createClass(GraphQLScalarType, [{
     key: 'serialize',
@@ -392,8 +392,6 @@ var GraphQLInterfaceType = exports.GraphQLInterfaceType = function () {
 
 var GraphQLUnionType = exports.GraphQLUnionType = function () {
   function GraphQLUnionType(config) {
-    var _this = this;
-
     _classCallCheck(this, GraphQLUnionType);
 
     (0, _invariant2.default)(config.name, 'Type must be named.');
@@ -404,21 +402,13 @@ var GraphQLUnionType = exports.GraphQLUnionType = function () {
       (0, _invariant2.default)(typeof config.resolveType === 'function', this.name + ' must provide "resolveType" as a function.');
     }
     this.resolveType = config.resolveType;
-    (0, _invariant2.default)(Array.isArray(config.types) && config.types.length > 0, 'Must provide Array of types for Union ' + config.name + '.');
-    config.types.forEach(function (type) {
-      (0, _invariant2.default)(type instanceof GraphQLObjectType, _this.name + ' may only contain Object types, it cannot contain: ' + (String(type) + '.'));
-      if (typeof _this.resolveType !== 'function') {
-        (0, _invariant2.default)(typeof type.isTypeOf === 'function', 'Union Type ' + _this.name + ' does not provide a "resolveType" function ' + ('and possible Type ' + type.name + ' does not provide a "isTypeOf" ') + 'function. There is no way to resolve this possible type ' + 'during execution.');
-      }
-    });
-    this._types = config.types;
     this._typeConfig = config;
   }
 
   _createClass(GraphQLUnionType, [{
     key: 'getTypes',
     value: function getTypes() {
-      return this._types;
+      return this._types || (this._types = defineTypes(this, this._typeConfig.types));
     }
   }, {
     key: 'toString',
@@ -429,6 +419,20 @@ var GraphQLUnionType = exports.GraphQLUnionType = function () {
 
   return GraphQLUnionType;
 }();
+
+function defineTypes(unionType, typesThunk) {
+  var types = resolveThunk(typesThunk);
+
+  (0, _invariant2.default)(Array.isArray(types) && types.length > 0, 'Must provide Array of types or a function which returns ' + ('such an array for Union ' + unionType.name + '.'));
+  types.forEach(function (objType) {
+    (0, _invariant2.default)(objType instanceof GraphQLObjectType, unionType.name + ' may only contain Object types, it cannot contain: ' + (String(objType) + '.'));
+    if (typeof unionType.resolveType !== 'function') {
+      (0, _invariant2.default)(typeof objType.isTypeOf === 'function', 'Union type "' + unionType.name + '" does not provide a "resolveType" ' + ('function and possible type "' + objType.name + '" does not provide an ') + '"isTypeOf" function. There is no way to resolve this possible type ' + 'during execution.');
+    }
+  });
+
+  return types;
+}
 
 /**
  * Enum Type Definition
@@ -498,15 +502,15 @@ var GraphQLEnumType /* <T> */ = exports.GraphQLEnumType = function () {
   }, {
     key: '_getValueLookup',
     value: function _getValueLookup() {
-      var _this2 = this;
+      var _this = this;
 
       if (!this._valueLookup) {
         (function () {
           var lookup = new Map();
-          _this2.getValues().forEach(function (value) {
+          _this.getValues().forEach(function (value) {
             lookup.set(value.value, value);
           });
-          _this2._valueLookup = lookup;
+          _this._valueLookup = lookup;
         })();
       }
       return this._valueLookup;
@@ -514,15 +518,15 @@ var GraphQLEnumType /* <T> */ = exports.GraphQLEnumType = function () {
   }, {
     key: '_getNameLookup',
     value: function _getNameLookup() {
-      var _this3 = this;
+      var _this2 = this;
 
       if (!this._nameLookup) {
         (function () {
           var lookup = Object.create(null);
-          _this3.getValues().forEach(function (value) {
+          _this2.getValues().forEach(function (value) {
             lookup[value.name] = value;
           });
-          _this3._nameLookup = lookup;
+          _this2._nameLookup = lookup;
         })();
       }
       return this._nameLookup;
@@ -598,7 +602,7 @@ var GraphQLInputObjectType = exports.GraphQLInputObjectType = function () {
   }, {
     key: '_defineFieldMap',
     value: function _defineFieldMap() {
-      var _this4 = this;
+      var _this3 = this;
 
       var fieldMap = resolveThunk(this._typeConfig.fields);
       (0, _invariant2.default)(isPlainObj(fieldMap), this.name + ' fields must be an object with field names as keys or a ' + 'function which returns such an object.');
@@ -610,7 +614,7 @@ var GraphQLInputObjectType = exports.GraphQLInputObjectType = function () {
         var field = _extends({}, fieldMap[fieldName], {
           name: fieldName
         });
-        (0, _invariant2.default)(isInputType(field.type), _this4.name + '.' + fieldName + ' field type must be Input Type but ' + ('got: ' + String(field.type) + '.'));
+        (0, _invariant2.default)(isInputType(field.type), _this3.name + '.' + fieldName + ' field type must be Input Type but ' + ('got: ' + String(field.type) + '.'));
         resultFieldMap[fieldName] = field;
       });
       return resultFieldMap;

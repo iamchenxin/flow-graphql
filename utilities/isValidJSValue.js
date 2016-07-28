@@ -16,6 +16,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 exports.isValidJSValue = isValidJSValue;
 
+var _iterall = require('iterall');
+
 var _invariant = require('../jsutils/invariant');
 
 var _invariant2 = _interopRequireDefault(_invariant);
@@ -55,15 +57,22 @@ function isValidJSValue(value, type) {
   if (type instanceof _definition.GraphQLList) {
     var _ret = function () {
       var itemType = type.ofType;
-      if (Array.isArray(value)) {
-        return {
-          v: value.reduce(function (acc, item, index) {
-            var errors = isValidJSValue(item, itemType);
-            return acc.concat(errors.map(function (error) {
+      if ((0, _iterall.isCollection)(value)) {
+        var _ret2 = function () {
+          var errors = [];
+          (0, _iterall.forEach)(value, function (item, index) {
+            errors.push.apply(errors, isValidJSValue(item, itemType).map(function (error) {
               return 'In element #' + index + ': ' + error;
             }));
-          }, [])
-        };
+          });
+          return {
+            v: {
+              v: errors
+            }
+          };
+        }();
+
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
       }
       return {
         v: isValidJSValue(value, itemType)
@@ -75,7 +84,7 @@ function isValidJSValue(value, type) {
 
   // Input objects check each defined field.
   if (type instanceof _definition.GraphQLInputObjectType) {
-    var _ret2 = function () {
+    var _ret3 = function () {
       if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || value === null) {
         return {
           v: ['Expected "' + type.name + '", found not an object.']
@@ -105,7 +114,7 @@ function isValidJSValue(value, type) {
       };
     }();
 
-    if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+    if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
   }
 
   (0, _invariant2.default)(type instanceof _definition.GraphQLScalarType || type instanceof _definition.GraphQLEnumType, 'Must be input type');

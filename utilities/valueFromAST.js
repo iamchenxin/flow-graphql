@@ -49,8 +49,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * | Input Object         | Object        |
  * | List                 | Array         |
  * | Boolean              | Boolean       |
- * | String / Enum Value  | String        |
+ * | String               | String        |
  * | Int / Float          | Number        |
+ * | Enum Value           | Mixed         |
  *
  */
 function valueFromAST(valueAST, type, variables) {
@@ -96,12 +97,12 @@ function valueFromAST(valueAST, type, variables) {
 
   if (type instanceof _definition.GraphQLInputObjectType) {
     var _ret2 = function () {
-      var fields = type.getFields();
       if (valueAST.kind !== Kind.OBJECT) {
         return {
           v: null
         };
       }
+      var fields = type.getFields();
       var fieldASTs = (0, _keyMap2.default)(valueAST.fields, function (field) {
         return field.name.value;
       });

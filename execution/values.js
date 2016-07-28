@@ -17,6 +17,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 exports.getVariableValues = getVariableValues;
 exports.getArgumentValues = getArgumentValues;
 
+var _iterall = require('iterall');
+
 var _error = require('../error');
 
 var _invariant = require('../jsutils/invariant');
@@ -129,13 +131,20 @@ function coerceValue(type, value) {
   if (type instanceof _definition.GraphQLList) {
     var _ret = function () {
       var itemType = type.ofType;
-      // TODO: support iterable input
-      if (Array.isArray(_value)) {
-        return {
-          v: _value.map(function (item) {
-            return coerceValue(itemType, item);
-          })
-        };
+      if ((0, _iterall.isCollection)(_value)) {
+        var _ret2 = function () {
+          var coercedValues = [];
+          (0, _iterall.forEach)(_value, function (item) {
+            coercedValues.push(coerceValue(itemType, item));
+          });
+          return {
+            v: {
+              v: coercedValues
+            }
+          };
+        }();
+
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
       }
       return {
         v: [coerceValue(itemType, _value)]
@@ -146,7 +155,7 @@ function coerceValue(type, value) {
   }
 
   if (type instanceof _definition.GraphQLInputObjectType) {
-    var _ret2 = function () {
+    var _ret3 = function () {
       if ((typeof _value === 'undefined' ? 'undefined' : _typeof(_value)) !== 'object' || _value === null) {
         return {
           v: null
@@ -168,7 +177,7 @@ function coerceValue(type, value) {
       };
     }();
 
-    if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+    if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
   }
 
   (0, _invariant2.default)(type instanceof _definition.GraphQLScalarType || type instanceof _definition.GraphQLEnumType, 'Must be input type');

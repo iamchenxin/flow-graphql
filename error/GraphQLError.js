@@ -26,14 +26,30 @@ var GraphQLError = exports.GraphQLError = function (_Error) {
 
   function GraphQLError(message,
   // A flow bug keeps us from declaring nodes as an array of Node
-  nodes, /* Node */stack, source, positions) {
+  nodes, /* Node */stack, source, positions, path, originalError) {
     _classCallCheck(this, GraphQLError);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(GraphQLError).call(this, message));
 
-    _this.message = message;
+    Object.defineProperty(_this, 'message', {
+      value: message,
+      // By being enumerable, JSON.stringify will include `message` in the
+      // resulting output. This ensures that the simplist possible GraphQL
+      // service adheres to the spec.
+      enumerable: true,
+      // Note: you really shouldn't overwrite message, but it enables
+      // Error brand-checking.
+      writable: true
+    });
 
-    Object.defineProperty(_this, 'stack', { value: stack || message });
+    Object.defineProperty(_this, 'stack', {
+      value: stack || message,
+      // Note: stack should not really be writable, but some libraries (such
+      // as bluebird) use Error brand-checking which specifically looks to see
+      // if stack is a writable property.
+      writable: true
+    });
+
     Object.defineProperty(_this, 'nodes', { value: nodes });
 
     // Note: flow does not yet know about Object.defineProperty with `get`.
@@ -69,14 +85,31 @@ var GraphQLError = exports.GraphQLError = function (_Error) {
 
     Object.defineProperty(_this, 'locations', {
       get: function get() {
-        var _this2 = this;
-
-        if (this.positions && this.source) {
-          return this.positions.map(function (pos) {
-            return (0, _language.getLocation)(_this2.source, pos);
+        var _positions = this.positions;
+        var _source = this.source;
+        if (_positions && _positions.length > 0 && _source) {
+          return _positions.map(function (pos) {
+            return (0, _language.getLocation)(_source, pos);
           });
         }
-      }
+      },
+
+      // By being enumerable, JSON.stringify will include `locations` in the
+      // resulting output. This ensures that the simplist possible GraphQL
+      // service adheres to the spec.
+      enumerable: true
+    });
+
+    Object.defineProperty(_this, 'path', {
+      value: path,
+      // By being enumerable, JSON.stringify will include `path` in the
+      // resulting output. This ensures that the simplist possible GraphQL
+      // service adheres to the spec.
+      enumerable: true
+    });
+
+    Object.defineProperty(_this, 'originalError', {
+      value: originalError
     });
     return _this;
   }

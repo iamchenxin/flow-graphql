@@ -16,6 +16,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 exports.execute = execute;
 
+var _iterall = require('iterall');
+
 var _error = require('../error');
 
 var _find = require('../jsutils/find');
@@ -142,7 +144,7 @@ function buildExecutionContext(schema, documentAST, rootValue, contextValue, raw
         fragments[definition.name.value] = definition;
         break;
       default:
-        throw new _error.GraphQLError('GraphQL cannot execute a request containing a ' + definition.kind + '.', definition);
+        throw new _error.GraphQLError('GraphQL cannot execute a request containing a ' + definition.kind + '.', [definition]);
     }
   });
   if (!operation) {
@@ -381,7 +383,7 @@ function promiseForObject(object) {
 }
 
 /**
- * Implements the logic to compute the key of a given field’s entry
+ * Implements the logic to compute the key of a given field's entry
  */
 function getFieldEntryKey(node) {
   return node.alias ? node.alias.value : node.name.value;
@@ -453,18 +455,18 @@ function resolveOrError(resolveFn, source, args, context, info) {
 // in the execution context.
 function completeValueCatchingError(exeContext, returnType, fieldASTs, info, path, result) {
   // If the field type is non-nullable, then it is resolved without any
-  // protection from errors.
+  // protection from errors, however it still properly locates the error.
   if (returnType instanceof _definition.GraphQLNonNull) {
-    return completeValue(exeContext, returnType, fieldASTs, info, path, result);
+    return completeValueWithLocatedError(exeContext, returnType, fieldASTs, info, path, result);
   }
 
   // Otherwise, error protection is applied, logging the error and resolving
   // a null value for this field if one is encountered.
   try {
-    var completed = completeValue(exeContext, returnType, fieldASTs, info, path, result);
+    var completed = completeValueWithLocatedError(exeContext, returnType, fieldASTs, info, path, result);
     if (isThenable(completed)) {
-      // If `completeValue` returned a rejected promise, log the rejection
-      // error and resolve to null.
+      // If `completeValueWithLocatedError` returned a rejected promise, log
+      // the rejection error and resolve to null.
       // Note: we don't rely on a `catch` method, but we do expect "thenable"
       // to take a second callback for the error case.
       return completed.then(undefined, function (error) {
@@ -474,10 +476,26 @@ function completeValueCatchingError(exeContext, returnType, fieldASTs, info, pat
     }
     return completed;
   } catch (error) {
-    // If `completeValue` returned abruptly (threw an error), log the error
-    // and return null.
+    // If `completeValueWithLocatedError` returned abruptly (threw an error),
+    // log the error and return null.
     exeContext.errors.push(error);
     return null;
+  }
+}
+
+// This is a small wrapper around completeValue which annotates errors with
+// location information.
+function completeValueWithLocatedError(exeContext, returnType, fieldASTs, info, path, result) {
+  try {
+    var completed = completeValue(exeContext, returnType, fieldASTs, info, path, result);
+    if (isThenable(completed)) {
+      return completed.catch(function (error) {
+        return Promise.reject((0, _error.locatedError)(error, fieldASTs, path));
+      });
+    }
+    return completed;
+  } catch (error) {
+    throw (0, _error.locatedError)(error, fieldASTs, path);
   }
 }
 
@@ -505,20 +523,14 @@ function completeValueCatchingError(exeContext, returnType, fieldASTs, info, pat
 function completeValue(exeContext, returnType, fieldASTs, info, path, result) {
   // If result is a Promise, apply-lift over completeValue.
   if (isThenable(result)) {
-    return result.then(
-    // Once resolved to a value, complete that value.
-    function (resolved) {
+    return result.then(function (resolved) {
       return completeValue(exeContext, returnType, fieldASTs, info, path, resolved);
-    },
-    // If rejected, create a located error, and continue to reject.
-    function (error) {
-      return Promise.reject((0, _error.locatedError)(error, fieldASTs, path));
     });
   }
 
   // If result is an Error, throw a located error.
   if (result instanceof Error) {
-    throw (0, _error.locatedError)(result, fieldASTs, path);
+    throw result;
   }
 
   // If field type is NonNull, complete for inner type, and throw field error
@@ -526,7 +538,7 @@ function completeValue(exeContext, returnType, fieldASTs, info, path, result) {
   if (returnType instanceof _definition.GraphQLNonNull) {
     var completed = completeValue(exeContext, returnType.ofType, fieldASTs, info, path, result);
     if (completed === null) {
-      throw new _error.GraphQLError('Cannot return null for non-nullable field ' + info.parentType.name + '.' + info.fieldName + '.', fieldASTs);
+      throw new Error('Cannot return null for non-nullable field ' + info.parentType.name + '.' + info.fieldName + '.');
     }
     return completed;
   }
@@ -559,7 +571,7 @@ function completeValue(exeContext, returnType, fieldASTs, info, path, result) {
   }
 
   // Not reachable. All possible output types have been considered.
-  (0, _invariant2.default)(false, 'Cannot complete value of unexpected type "' + String(returnType) + '".');
+  throw new Error('Cannot complete value of unexpected type "' + String(returnType) + '".');
 }
 
 /**
@@ -567,13 +579,14 @@ function completeValue(exeContext, returnType, fieldASTs, info, path, result) {
  * inner type
  */
 function completeListValue(exeContext, returnType, fieldASTs, info, path, result) {
-  (0, _invariant2.default)(Array.isArray(result), 'User Error: expected iterable, but did not find one for field ' + info.parentType.name + '.' + info.fieldName + '.');
+  (0, _invariant2.default)((0, _iterall.isCollection)(result), 'Expected Iterable, but did not find one for field ' + info.parentType.name + '.' + info.fieldName + '.');
 
   // This is specified as a simple map, however we're optimizing the path
   // where the list contains no Promises by avoiding creating another Promise.
   var itemType = returnType.ofType;
   var containsPromise = false;
-  var completedResults = result.map(function (item, index) {
+  var completedResults = [];
+  (0, _iterall.forEach)(result, function (item, index) {
     // No need to modify the info object containing the path,
     // since from here on it is not ever accessed by resolver functions.
     var fieldPath = path.concat([index]);
@@ -582,7 +595,7 @@ function completeListValue(exeContext, returnType, fieldASTs, info, path, result
     if (!containsPromise && isThenable(completedItem)) {
       containsPromise = true;
     }
-    return completedItem;
+    completedResults.push(completedItem);
   });
 
   return containsPromise ? Promise.all(completedResults) : completedResults;
@@ -595,7 +608,10 @@ function completeListValue(exeContext, returnType, fieldASTs, info, path, result
 function completeLeafValue(returnType, result) {
   (0, _invariant2.default)(returnType.serialize, 'Missing serialize method on type');
   var serializedResult = returnType.serialize(result);
-  return (0, _isNullish2.default)(serializedResult) ? null : serializedResult;
+  if ((0, _isNullish2.default)(serializedResult)) {
+    throw new Error('Expected a value of type "' + String(returnType) + '" but ' + ('received: ' + String(result)));
+  }
+  return serializedResult;
 }
 
 /**

@@ -1,9 +1,11 @@
 # flow-GraphQL.js
 
-Add flow-type outputs for [Graphql v0.6.0](https://github.com/graphql/graphql-js)
+Add flow-type outputs for [Graphql](https://github.com/graphql/graphql-js)
 
 # Changelog
-## v0.6.6
+## v0.6.7 (Graphql v0.6.2)
+  Update to Graphql v0.6.2.
+## v0.6.6 (Graphql v0.6.1)
   `GraphQLObjectTypeConfig<TSource>` to `GraphQLFieldResolveFn<TSource, TResult>`
 Make user can do a whole top-bottom Flow check between their resolvers.
 With the Flow typed feature, user can ensure his data structure is correspond to schema . ex: [starWarsData.js L103](https://github.com/graphql/graphql-js/commit/046cbba2732be8bbbef74f988fffd04294b583c2#diff-e6e81fa96fbb4bdccb4e3f0042b5f1a3R103)

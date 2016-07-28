@@ -13,12 +13,15 @@ var _GraphQLError = require('./GraphQLError');
  * document responsible for the original Error.
  */
 function locatedError(originalError, nodes, path) {
+  // Note: this uses a brand-check to support GraphQL errors originating from
+  // other contexts.
+  if (originalError && originalError.hasOwnProperty('locations')) {
+    return originalError;
+  }
+
   var message = originalError ? originalError.message || String(originalError) : 'An unknown error occurred.';
   var stack = originalError ? originalError.stack : null;
-  var error = new _GraphQLError.GraphQLError(message, nodes, stack);
-  error.path = path;
-  error.originalError = originalError;
-  return error;
+  return new _GraphQLError.GraphQLError(message, nodes, stack, null, null, path, originalError);
 }
 /**
  *  Copyright (c) 2015, Facebook, Inc.

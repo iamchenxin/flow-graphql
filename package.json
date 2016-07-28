@@ -1,7 +1,7 @@
 {
   "name": "flow-graphql",
-  "version": "0.6.6",
-  "description": "flow typed grapgql v0.6.1",
+  "version": "0.6.7",
+  "description": "flow typed grapgql",
   "contributors": [
     "Lee Byron <lee@leebyron.com> (http://leebyron.com/)",
     "Nicholas Schrock <schrockn@fb.com>",
@@ -51,7 +51,7 @@
     "validation/"
   ],
   "dependencies": {
-    "babel-runtime": ">=6.0.0"
+    "iterall": "1.0.2"
   },
   "devDependencies": {
     "babel-cli": "6.10.1",
@@ -78,10 +78,10 @@
     "babel-plugin-transform-object-rest-spread": "6.8.0",
     "babel-plugin-transform-regenerator": "6.9.0",
     "babel-preset-fbjs": "^2.0.0",
-    "eslint": "2.11.1",
-    "eslint-plugin-babel": "3.2.0",
+    "eslint": "3.1.1",
+    "eslint-plugin-babel": "3.3.0",
     "eslint-plugin-flow-vars": "^0.4.0",
-    "eslint-plugin-flowtype": "2.2.7",
-    "flow-bin": "0.28.0"
+    "eslint-plugin-flowtype": "2.3.1",
+    "flow-bin": "0.29.0"
   }
 }

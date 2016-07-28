@@ -23,6 +23,8 @@ var _printer = require('../language/printer');
 
 var _definition = require('../type/definition');
 
+var _scalars = require('../type/scalars');
+
 var _directives = require('../type/directives');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -178,7 +180,7 @@ function printDeprecated(fieldOrEnumVal) {
   if (reason === '' || reason === _directives.DEFAULT_DEPRECATION_REASON) {
     return ' @deprecated';
   }
-  return ' @deprecated(reason: ' + (0, _printer.print)((0, _astFromValue.astFromValue)(reason)) + ')';
+  return ' @deprecated(reason: ' + (0, _printer.print)((0, _astFromValue.astFromValue)(reason, _scalars.GraphQLString)) + ')';
 }
 
 function printArgs(fieldOrDirectives) {
