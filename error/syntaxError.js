@@ -25,7 +25,7 @@ var _GraphQLError = require('./GraphQLError');
 
 function syntaxError(source, position, description) {
   var location = (0, _location.getLocation)(source, position);
-  var error = new _GraphQLError.GraphQLError('Syntax Error ' + source.name + ' (' + location.line + ':' + location.column + ') ' + description + '\n\n' + highlightSourceAtLocation(source, location), undefined, undefined, source, [position]);
+  var error = new _GraphQLError.GraphQLError('Syntax Error ' + source.name + ' (' + location.line + ':' + location.column + ') ' + description + '\n\n' + highlightSourceAtLocation(source, location), undefined, source, [position]);
   return error;
 }
 

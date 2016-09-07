@@ -3,15 +3,98 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.GraphQLError = undefined;
+exports.GraphQLError = GraphQLError;
 
 var _language = require('../language');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/**
+ * A GraphQLError describes an Error found during the parse, validate, or
+ * execute phases of performing a GraphQL operation. In addition to a message
+ * and stack trace, it also includes information about the locations in a
+ * GraphQL document and/or execution result that correspond to the Error.
+ */
+function GraphQLError( // eslint-disable-line no-redeclare
+message, nodes, source, positions, path, originalError) {
+  // Include (non-enumerable) stack trace.
+  if (originalError && originalError.stack) {
+    Object.defineProperty(this, 'stack', {
+      value: originalError.stack,
+      writable: true
+    });
+  } else if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, GraphQLError);
+  } else {
+    Object.defineProperty(this, 'stack', {
+      value: Error().stack,
+      writable: true
+    });
+  }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  // Compute locations in the source for the given nodes/positions.
+  var _source = source;
+  if (!_source && nodes && nodes.length > 0) {
+    var node = nodes[0];
+    _source = node && node.loc && node.loc.source;
+  }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  var _positions = positions;
+  if (!_positions && nodes) {
+    _positions = nodes.map(function (node) {
+      return node.loc && node.loc.start;
+    }).filter(Boolean);
+  }
+  if (_positions && _positions.length === 0) {
+    _positions = undefined;
+  }
+
+  var _locations = undefined;
+  if (_source && _positions) {
+    _locations = _positions.map(function (pos) {
+      return (0, _language.getLocation)(_source, pos);
+    });
+  }
+
+  Object.defineProperties(this, {
+    message: {
+      value: message,
+      // By being enumerable, JSON.stringify will include `message` in the
+      // resulting output. This ensures that the simplist possible GraphQL
+      // service adheres to the spec.
+      enumerable: true,
+      writable: true
+    },
+    locations: {
+      // Coercing falsey values to undefined ensures they will not be included
+      // in JSON.stringify() when not provided.
+      value: _locations || undefined,
+      // By being enumerable, JSON.stringify will include `locations` in the
+      // resulting output. This ensures that the simplist possible GraphQL
+      // service adheres to the spec.
+      enumerable: true
+    },
+    path: {
+      // Coercing falsey values to undefined ensures they will not be included
+      // in JSON.stringify() when not provided.
+      value: path || undefined,
+      // By being enumerable, JSON.stringify will include `path` in the
+      // resulting output. This ensures that the simplist possible GraphQL
+      // service adheres to the spec.
+      enumerable: true
+    },
+    nodes: {
+      value: nodes || undefined
+    },
+    source: {
+      value: _source || undefined
+    },
+    positions: {
+      value: _positions || undefined
+    },
+    originalError: {
+      value: originalError
+    }
+  });
+}
 /**
  *  Copyright (c) 2015, Facebook, Inc.
  *  All rights reserved.
@@ -21,99 +104,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
 
-var GraphQLError = exports.GraphQLError = function (_Error) {
-  _inherits(GraphQLError, _Error);
-
-  function GraphQLError(message,
-  // A flow bug keeps us from declaring nodes as an array of Node
-  nodes, /* Node */stack, source, positions, path, originalError) {
-    _classCallCheck(this, GraphQLError);
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(GraphQLError).call(this, message));
-
-    Object.defineProperty(_this, 'message', {
-      value: message,
-      // By being enumerable, JSON.stringify will include `message` in the
-      // resulting output. This ensures that the simplist possible GraphQL
-      // service adheres to the spec.
-      enumerable: true,
-      // Note: you really shouldn't overwrite message, but it enables
-      // Error brand-checking.
-      writable: true
-    });
-
-    Object.defineProperty(_this, 'stack', {
-      value: stack || message,
-      // Note: stack should not really be writable, but some libraries (such
-      // as bluebird) use Error brand-checking which specifically looks to see
-      // if stack is a writable property.
-      writable: true
-    });
-
-    Object.defineProperty(_this, 'nodes', { value: nodes });
-
-    // Note: flow does not yet know about Object.defineProperty with `get`.
-    Object.defineProperty(_this, 'source', {
-      get: function get() {
-        if (source) {
-          return source;
-        }
-        if (nodes && nodes.length > 0) {
-          var node = nodes[0];
-          return node && node.loc && node.loc.source;
-        }
-      }
-    });
-
-    Object.defineProperty(_this, 'positions', {
-      get: function get() {
-        if (positions) {
-          return positions;
-        }
-        if (nodes) {
-          var nodePositions = nodes.map(function (node) {
-            return node.loc && node.loc.start;
-          });
-          if (nodePositions.some(function (p) {
-            return p;
-          })) {
-            return nodePositions;
-          }
-        }
-      }
-    });
-
-    Object.defineProperty(_this, 'locations', {
-      get: function get() {
-        var _positions = this.positions;
-        var _source = this.source;
-        if (_positions && _positions.length > 0 && _source) {
-          return _positions.map(function (pos) {
-            return (0, _language.getLocation)(_source, pos);
-          });
-        }
-      },
-
-      // By being enumerable, JSON.stringify will include `locations` in the
-      // resulting output. This ensures that the simplist possible GraphQL
-      // service adheres to the spec.
-      enumerable: true
-    });
-
-    Object.defineProperty(_this, 'path', {
-      value: path,
-      // By being enumerable, JSON.stringify will include `path` in the
-      // resulting output. This ensures that the simplist possible GraphQL
-      // service adheres to the spec.
-      enumerable: true
-    });
-
-    Object.defineProperty(_this, 'originalError', {
-      value: originalError
-    });
-    return _this;
-  }
-
-  return GraphQLError;
-}(Error);
+GraphQLError.prototype = Object.create(Error.prototype, {
+  constructor: { value: GraphQLError },
+  name: { value: 'GraphQLError' }
+});
 //# sourceMappingURL=GraphQLError.js.map

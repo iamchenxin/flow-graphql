@@ -318,6 +318,12 @@ Object.defineProperty(exports, 'Kind', {
     return _language.Kind;
   }
 });
+Object.defineProperty(exports, 'TokenKind', {
+  enumerable: true,
+  get: function get() {
+    return _language.TokenKind;
+  }
+});
 Object.defineProperty(exports, 'BREAK', {
   enumerable: true,
   get: function get() {
@@ -390,6 +396,12 @@ Object.defineProperty(exports, 'buildASTSchema', {
     return _utilities.buildASTSchema;
   }
 });
+Object.defineProperty(exports, 'buildSchema', {
+  enumerable: true,
+  get: function get() {
+    return _utilities.buildSchema;
+  }
+});
 Object.defineProperty(exports, 'extendSchema', {
   enumerable: true,
   get: function get() {
@@ -442,6 +454,12 @@ Object.defineProperty(exports, 'concatAST', {
   enumerable: true,
   get: function get() {
     return _utilities.concatAST;
+  }
+});
+Object.defineProperty(exports, 'separateOperations', {
+  enumerable: true,
+  get: function get() {
+    return _utilities.separateOperations;
   }
 });
 Object.defineProperty(exports, 'isEqualType', {

@@ -17,6 +17,8 @@ var _keyValMap = require('../jsutils/keyValMap');
 
 var _keyValMap2 = _interopRequireDefault(_keyValMap);
 
+var _buildASTSchema = require('./buildASTSchema');
+
 var _valueFromAST = require('./valueFromAST');
 
 var _GraphQLError = require('../error/GraphQLError');
@@ -24,6 +26,8 @@ var _GraphQLError = require('../error/GraphQLError');
 var _schema = require('../type/schema');
 
 var _definition = require('../type/definition');
+
+var _directives = require('../type/directives');
 
 var _introspection = require('../type/introspection');
 
@@ -64,6 +68,10 @@ function extendSchema(schema, documentAST) {
   var typeDefinitionMap = {};
   var typeExtensionsMap = {};
 
+  // New directives and types are separate because a directives and types can
+  // have the same name. For example, a type named "skip".
+  var directiveDefinitions = [];
+
   for (var i = 0; i < documentAST.definitions.length; i++) {
     var def = documentAST.definitions[i];
     switch (def.kind) {
@@ -100,12 +108,20 @@ function extendSchema(schema, documentAST) {
         }
         typeExtensionsMap[extendedTypeName] = extensions;
         break;
+      case _kinds.DIRECTIVE_DEFINITION:
+        var directiveName = def.name.value;
+        var existingDirective = schema.getDirective(directiveName);
+        if (existingDirective) {
+          throw new _GraphQLError.GraphQLError('Directive "' + directiveName + '" already exists in the schema. It ' + 'cannot be redefined.', [def]);
+        }
+        directiveDefinitions.push(def);
+        break;
     }
   }
 
-  // If this document contains no new types, then return the same unmodified
-  // GraphQLSchema instance.
-  if (Object.keys(typeExtensionsMap).length === 0 && Object.keys(typeDefinitionMap).length === 0) {
+  // If this document contains no new types, extensions, or directives then
+  // return the same unmodified GraphQLSchema instance.
+  if (Object.keys(typeExtensionsMap).length === 0 && Object.keys(typeDefinitionMap).length === 0 && directiveDefinitions.length === 0) {
     return schema;
   }
 
@@ -156,12 +172,21 @@ function extendSchema(schema, documentAST) {
     mutation: mutationType,
     subscription: subscriptionType,
     types: types,
-    // Copy directives.
-    directives: schema.getDirectives()
+    directives: getMergedDirectives()
   });
 
   // Below are functions used for producing this schema that have closed over
   // this scope and have access to the schema, cache, and newly defined types.
+
+  function getMergedDirectives() {
+    var existingDirectives = schema.getDirectives();
+    (0, _invariant2.default)(existingDirectives, 'schema must have default directives');
+
+    var newDirectives = directiveDefinitions.map(function (directiveAST) {
+      return getDirective(directiveAST);
+    });
+    return existingDirectives.concat(newDirectives);
+  }
 
   function getTypeFromDef(typeDef) {
     var type = _getNamedType(typeDef.name);
@@ -248,7 +273,8 @@ function extendSchema(schema, documentAST) {
       },
       fields: function fields() {
         return extendFieldMap(type);
-      }
+      },
+      isTypeOf: type.isTypeOf
     });
   }
 
@@ -259,7 +285,7 @@ function extendSchema(schema, documentAST) {
       fields: function fields() {
         return extendFieldMap(type);
       },
-      resolveType: cannotExecuteClientSchema
+      resolveType: type.resolveType
     });
   }
 
@@ -268,7 +294,7 @@ function extendSchema(schema, documentAST) {
       name: type.name,
       description: type.description,
       types: type.getTypes().map(getTypeFromDef),
-      resolveType: cannotExecuteClientSchema
+      resolveType: type.resolveType
     });
   }
 
@@ -306,7 +332,7 @@ function extendSchema(schema, documentAST) {
         args: (0, _keyMap2.default)(field.args, function (arg) {
           return arg.name;
         }),
-        resolve: cannotExecuteClientSchema
+        resolve: field.resolve
       };
     });
 
@@ -320,9 +346,9 @@ function extendSchema(schema, documentAST) {
             throw new _GraphQLError.GraphQLError('Field "' + type.name + '.' + fieldName + '" already exists in the ' + 'schema. It cannot also be defined in this type extension.', [field]);
           }
           newFieldMap[fieldName] = {
+            description: (0, _buildASTSchema.getDescription)(field),
             type: buildOutputFieldType(field.type),
-            args: buildInputValues(field.arguments),
-            resolve: cannotExecuteClientSchema
+            args: buildInputValues(field.arguments)
           };
         });
       });
@@ -362,6 +388,7 @@ function extendSchema(schema, documentAST) {
   function buildObjectType(typeAST) {
     return new _definition.GraphQLObjectType({
       name: typeAST.name.value,
+      description: (0, _buildASTSchema.getDescription)(typeAST),
       interfaces: function interfaces() {
         return buildImplementedInterfaces(typeAST);
       },
@@ -374,26 +401,29 @@ function extendSchema(schema, documentAST) {
   function buildInterfaceType(typeAST) {
     return new _definition.GraphQLInterfaceType({
       name: typeAST.name.value,
+      description: (0, _buildASTSchema.getDescription)(typeAST),
       fields: function fields() {
         return buildFieldMap(typeAST);
       },
-      resolveType: cannotExecuteClientSchema
+      resolveType: cannotExecuteExtendedSchema
     });
   }
 
   function buildUnionType(typeAST) {
     return new _definition.GraphQLUnionType({
       name: typeAST.name.value,
+      description: (0, _buildASTSchema.getDescription)(typeAST),
       types: typeAST.types.map(getObjectTypeFromAST),
-      resolveType: cannotExecuteClientSchema
+      resolveType: cannotExecuteExtendedSchema
     });
   }
 
   function buildScalarType(typeAST) {
     return new _definition.GraphQLScalarType({
       name: typeAST.name.value,
-      serialize: function serialize() {
-        return null;
+      description: (0, _buildASTSchema.getDescription)(typeAST),
+      serialize: function serialize(id) {
+        return id;
       },
       // Note: validation calls the parse functions to determine if a
       // literal value is correct. Returning null would cause use of custom
@@ -411,6 +441,7 @@ function extendSchema(schema, documentAST) {
   function buildEnumType(typeAST) {
     return new _definition.GraphQLEnumType({
       name: typeAST.name.value,
+      description: (0, _buildASTSchema.getDescription)(typeAST),
       values: (0, _keyValMap2.default)(typeAST.values, function (v) {
         return v.name.value;
       }, function () {
@@ -422,9 +453,20 @@ function extendSchema(schema, documentAST) {
   function buildInputObjectType(typeAST) {
     return new _definition.GraphQLInputObjectType({
       name: typeAST.name.value,
+      description: (0, _buildASTSchema.getDescription)(typeAST),
       fields: function fields() {
         return buildInputValues(typeAST.fields);
       }
+    });
+  }
+
+  function getDirective(directiveAST) {
+    return new _directives.GraphQLDirective({
+      name: directiveAST.name.value,
+      locations: directiveAST.locations.map(function (node) {
+        return node.value;
+      }),
+      args: directiveAST.arguments && buildInputValues(directiveAST.arguments)
     });
   }
 
@@ -438,8 +480,8 @@ function extendSchema(schema, documentAST) {
     }, function (field) {
       return {
         type: buildOutputFieldType(field.type),
-        args: buildInputValues(field.arguments),
-        resolve: cannotExecuteClientSchema
+        description: (0, _buildASTSchema.getDescription)(field),
+        args: buildInputValues(field.arguments)
       };
     });
   }
@@ -451,6 +493,7 @@ function extendSchema(schema, documentAST) {
       var type = buildInputFieldType(value.type);
       return {
         type: type,
+        description: (0, _buildASTSchema.getDescription)(value),
         defaultValue: (0, _valueFromAST.valueFromAST)(value.defaultValue, type)
       };
     });
@@ -481,7 +524,7 @@ function extendSchema(schema, documentAST) {
   }
 }
 
-function cannotExecuteClientSchema() {
-  throw new Error('Client Schema cannot be used for execution.');
+function cannotExecuteExtendedSchema() {
+  throw new Error('Extended Schema cannot use Interface or Union types for execution.');
 }
 //# sourceMappingURL=extendSchema.js.map

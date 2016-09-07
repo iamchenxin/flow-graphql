@@ -39,6 +39,12 @@ Object.defineProperty(exports, 'buildASTSchema', {
     return _buildASTSchema.buildASTSchema;
   }
 });
+Object.defineProperty(exports, 'buildSchema', {
+  enumerable: true,
+  get: function get() {
+    return _buildASTSchema.buildSchema;
+  }
+});
 
 var _extendSchema = require('./extendSchema');
 
@@ -124,6 +130,15 @@ Object.defineProperty(exports, 'concatAST', {
   enumerable: true,
   get: function get() {
     return _concatAST.concatAST;
+  }
+});
+
+var _separateOperations = require('./separateOperations');
+
+Object.defineProperty(exports, 'separateOperations', {
+  enumerable: true,
+  get: function get() {
+    return _separateOperations.separateOperations;
   }
 });
 

@@ -155,8 +155,8 @@ function buildClientSchema(introspection) {
     return new _definition.GraphQLScalarType({
       name: scalarIntrospection.name,
       description: scalarIntrospection.description,
-      serialize: function serialize() {
-        return null;
+      serialize: function serialize(id) {
+        return id;
       },
       // Note: validation calls the parse functions to determine if a
       // literal value is correct. Returning null would cause use of custom
@@ -235,8 +235,7 @@ function buildClientSchema(introspection) {
         description: fieldIntrospection.description,
         deprecationReason: fieldIntrospection.deprecationReason,
         type: getOutputType(fieldIntrospection.type),
-        args: buildInputValueDefMap(fieldIntrospection.args),
-        resolve: cannotExecuteClientSchema
+        args: buildInputValueDefMap(fieldIntrospection.args)
       };
     });
   }
@@ -306,6 +305,6 @@ function buildClientSchema(introspection) {
  */
 
 function cannotExecuteClientSchema() {
-  throw new Error('Client Schema cannot be used for execution.');
+  throw new Error('Client Schema cannot use Interface or Union types for execution.');
 }
 //# sourceMappingURL=buildClientSchema.js.map

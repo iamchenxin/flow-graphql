@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.BREAK = exports.visitWithTypeInfo = exports.visitInParallel = exports.visit = exports.Source = exports.print = exports.parseValue = exports.parse = exports.lex = exports.Kind = exports.getLocation = undefined;
+exports.BREAK = exports.visitWithTypeInfo = exports.visitInParallel = exports.visit = exports.Source = exports.print = exports.parseValue = exports.parse = exports.TokenKind = exports.createLexer = exports.Kind = exports.getLocation = undefined;
 
 var _location = require('./location');
 
@@ -16,10 +16,16 @@ Object.defineProperty(exports, 'getLocation', {
 
 var _lexer = require('./lexer');
 
-Object.defineProperty(exports, 'lex', {
+Object.defineProperty(exports, 'createLexer', {
   enumerable: true,
   get: function get() {
-    return _lexer.lex;
+    return _lexer.createLexer;
+  }
+});
+Object.defineProperty(exports, 'TokenKind', {
+  enumerable: true,
+  get: function get() {
+    return _lexer.TokenKind;
   }
 });
 

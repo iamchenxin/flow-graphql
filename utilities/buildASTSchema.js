@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.buildASTSchema = buildASTSchema;
+exports.getDescription = getDescription;
+exports.buildSchema = buildSchema;
 
 var _find = require('../jsutils/find');
 
@@ -13,15 +15,15 @@ var _invariant = require('../jsutils/invariant');
 
 var _invariant2 = _interopRequireDefault(_invariant);
 
-var _keyMap = require('../jsutils/keyMap');
-
-var _keyMap2 = _interopRequireDefault(_keyMap);
-
 var _keyValMap = require('../jsutils/keyValMap');
 
 var _keyValMap2 = _interopRequireDefault(_keyValMap);
 
 var _valueFromAST = require('./valueFromAST');
+
+var _lexer = require('../language/lexer');
+
+var _parser = require('../language/parser');
 
 var _values = require('../execution/values');
 
@@ -39,15 +41,6 @@ var _introspection = require('../type/introspection');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 function buildWrappedType(innerType, inputTypeAST) {
   if (inputTypeAST.kind === _kinds.LIST_TYPE) {
     return new _definition.GraphQLList(buildWrappedType(innerType, inputTypeAST.type));
@@ -59,6 +52,14 @@ function buildWrappedType(innerType, inputTypeAST) {
   }
   return innerType;
 }
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 function getNamedTypeAST(typeAST) {
   var namedType = typeAST;
@@ -72,9 +73,11 @@ function getNamedTypeAST(typeAST) {
  * This takes the ast of a schema document produced by the parse function in
  * src/language/parser.js.
  *
- * Given that AST it constructs a GraphQLSchema. As constructed
- * they are not particularly useful for non-introspection queries
- * since they have no resolve methods.
+ * If no schema definition is provided, then it will look for types named Query
+ * and Mutation.
+ *
+ * Given that AST it constructs a GraphQLSchema. The resulting schema
+ * has no resolve methods, so execution will use default resolvers.
  */
 function buildASTSchema(ast) {
   if (!ast || ast.kind !== _kinds.DOCUMENT) {
@@ -84,6 +87,7 @@ function buildASTSchema(ast) {
   var schemaDef = undefined;
 
   var typeDefs = [];
+  var astMap = Object.create(null);
   var directiveDefs = [];
   for (var i = 0; i < ast.definitions.length; i++) {
     var d = ast.definitions[i];
@@ -101,6 +105,7 @@ function buildASTSchema(ast) {
       case _kinds.UNION_TYPE_DEFINITION:
       case _kinds.INPUT_OBJECT_TYPE_DEFINITION:
         typeDefs.push(d);
+        astMap[d.name.value] = d;
         break;
       case _kinds.DIRECTIVE_DEFINITION:
         directiveDefs.push(d);
@@ -108,51 +113,52 @@ function buildASTSchema(ast) {
     }
   }
 
-  if (!schemaDef) {
-    throw new Error('Must provide a schema definition.');
-  }
-
   var queryTypeName = undefined;
   var mutationTypeName = undefined;
   var subscriptionTypeName = undefined;
-  schemaDef.operationTypes.forEach(function (operationType) {
-    var typeName = operationType.type.name.value;
-    if (operationType.operation === 'query') {
-      if (queryTypeName) {
-        throw new Error('Must provide only one query type in schema.');
+  if (schemaDef) {
+    schemaDef.operationTypes.forEach(function (operationType) {
+      var typeName = operationType.type.name.value;
+      if (operationType.operation === 'query') {
+        if (queryTypeName) {
+          throw new Error('Must provide only one query type in schema.');
+        }
+        if (!astMap[typeName]) {
+          throw new Error('Specified query type "' + typeName + '" not found in document.');
+        }
+        queryTypeName = typeName;
+      } else if (operationType.operation === 'mutation') {
+        if (mutationTypeName) {
+          throw new Error('Must provide only one mutation type in schema.');
+        }
+        if (!astMap[typeName]) {
+          throw new Error('Specified mutation type "' + typeName + '" not found in document.');
+        }
+        mutationTypeName = typeName;
+      } else if (operationType.operation === 'subscription') {
+        if (subscriptionTypeName) {
+          throw new Error('Must provide only one subscription type in schema.');
+        }
+        if (!astMap[typeName]) {
+          throw new Error('Specified subscription type "' + typeName + '" not found in document.');
+        }
+        subscriptionTypeName = typeName;
       }
-      queryTypeName = typeName;
-    } else if (operationType.operation === 'mutation') {
-      if (mutationTypeName) {
-        throw new Error('Must provide only one mutation type in schema.');
-      }
-      mutationTypeName = typeName;
-    } else if (operationType.operation === 'subscription') {
-      if (subscriptionTypeName) {
-        throw new Error('Must provide only one subscription type in schema.');
-      }
-      subscriptionTypeName = typeName;
+    });
+  } else {
+    if (astMap.Query) {
+      queryTypeName = 'Query';
     }
-  });
+    if (astMap.Mutation) {
+      mutationTypeName = 'Mutation';
+    }
+    if (astMap.Subscription) {
+      subscriptionTypeName = 'Subscription';
+    }
+  }
 
   if (!queryTypeName) {
-    throw new Error('Must provide schema definition with query type.');
-  }
-
-  var astMap = (0, _keyMap2.default)(typeDefs, function (d) {
-    return d.name.value;
-  });
-
-  if (!astMap[queryTypeName]) {
-    throw new Error('Specified query type "' + queryTypeName + '" not found in document.');
-  }
-
-  if (mutationTypeName && !astMap[mutationTypeName]) {
-    throw new Error('Specified mutation type "' + mutationTypeName + '" not found in document.');
-  }
-
-  if (subscriptionTypeName && !astMap[subscriptionTypeName]) {
-    throw new Error('Specified subscription type "' + subscriptionTypeName + '" not found in document.');
+    throw new Error('Must provide schema definition with query type or a type named Query.');
   }
 
   var innerTypeMap = {
@@ -207,6 +213,7 @@ function buildASTSchema(ast) {
   function getDirective(directiveAST) {
     return new _directives.GraphQLDirective({
       name: directiveAST.name.value,
+      description: getDescription(directiveAST),
       locations: directiveAST.locations.map(function (node) {
         return node.value;
       }),
@@ -291,16 +298,16 @@ function buildASTSchema(ast) {
 
   function makeTypeDef(def) {
     var typeName = def.name.value;
-    var config = {
+    return new _definition.GraphQLObjectType({
       name: typeName,
+      description: getDescription(def),
       fields: function fields() {
         return makeFieldDefMap(def);
       },
       interfaces: function interfaces() {
         return makeImplementedInterfaces(def);
       }
-    };
-    return new _definition.GraphQLObjectType(config);
+    });
   }
 
   function makeFieldDefMap(def) {
@@ -309,6 +316,7 @@ function buildASTSchema(ast) {
     }, function (field) {
       return {
         type: produceOutputType(field.type),
+        description: getDescription(field),
         args: makeInputValues(field.arguments),
         deprecationReason: getDeprecationReason(field.directives)
       };
@@ -326,31 +334,35 @@ function buildASTSchema(ast) {
       return value.name.value;
     }, function (value) {
       var type = produceInputType(value.type);
-      return { type: type, defaultValue: (0, _valueFromAST.valueFromAST)(value.defaultValue, type) };
+      return {
+        type: type,
+        description: getDescription(value),
+        defaultValue: (0, _valueFromAST.valueFromAST)(value.defaultValue, type)
+      };
     });
   }
 
   function makeInterfaceDef(def) {
     var typeName = def.name.value;
-    var config = {
+    return new _definition.GraphQLInterfaceType({
       name: typeName,
-      resolveType: function resolveType() {
-        return null;
-      },
+      description: getDescription(def),
       fields: function fields() {
         return makeFieldDefMap(def);
-      }
-    };
-    return new _definition.GraphQLInterfaceType(config);
+      },
+      resolveType: cannotExecuteSchema
+    });
   }
 
   function makeEnumDef(def) {
     var enumType = new _definition.GraphQLEnumType({
       name: def.name.value,
+      description: getDescription(def),
       values: (0, _keyValMap2.default)(def.values, function (enumValue) {
         return enumValue.name.value;
       }, function (enumValue) {
         return {
+          description: getDescription(enumValue),
           deprecationReason: getDeprecationReason(enumValue.directives)
         };
       })
@@ -362,18 +374,18 @@ function buildASTSchema(ast) {
   function makeUnionDef(def) {
     return new _definition.GraphQLUnionType({
       name: def.name.value,
-      resolveType: function resolveType() {
-        return null;
-      },
+      description: getDescription(def),
       types: def.types.map(function (t) {
         return produceObjectType(t);
-      })
+      }),
+      resolveType: cannotExecuteSchema
     });
   }
 
   function makeScalarDef(def) {
     return new _definition.GraphQLScalarType({
       name: def.name.value,
+      description: getDescription(def),
       serialize: function serialize() {
         return null;
       },
@@ -393,6 +405,7 @@ function buildASTSchema(ast) {
   function makeInputObjectDef(def) {
     return new _definition.GraphQLInputObjectType({
       name: def.name.value,
+      description: getDescription(def),
       fields: function fields() {
         return makeInputValues(def.fields);
       }
@@ -413,5 +426,54 @@ function getDeprecationReason(directives) {
   var reason = _getArgumentValues.reason;
 
   return reason;
+}
+
+/**
+ * Given an ast node, returns its string description based on a contiguous
+ * block full-line of comments preceding it.
+ */
+function getDescription(node) {
+  var loc = node.loc;
+  if (!loc) {
+    return;
+  }
+  var comments = [];
+  var minSpaces = undefined;
+  var token = loc.startToken.prev;
+  while (token && token.kind === _lexer.TokenKind.COMMENT && token.next && token.prev && token.line + 1 === token.next.line && token.line !== token.prev.line) {
+    var value = String(token.value);
+    var spaces = leadingSpaces(value);
+    if (minSpaces === undefined || spaces < minSpaces) {
+      minSpaces = spaces;
+    }
+    comments.push(value);
+    token = token.prev;
+  }
+  return comments.reverse().map(function (comment) {
+    return comment.slice(minSpaces);
+  }).join('\n');
+}
+
+/**
+ * A helper function to build a GraphQLSchema directly from a source
+ * document.
+ */
+function buildSchema(source) {
+  return buildASTSchema((0, _parser.parse)(source));
+}
+
+// Count the number of spaces on the starting side of a string.
+function leadingSpaces(str) {
+  var i = 0;
+  for (; i < str.length; i++) {
+    if (str[i] !== ' ') {
+      break;
+    }
+  }
+  return i;
+}
+
+function cannotExecuteSchema() {
+  throw new Error('Generated Schema cannot use Interface or Union types for execution.');
 }
 //# sourceMappingURL=buildASTSchema.js.map
