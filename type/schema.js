@@ -224,7 +224,7 @@ function typeMapReducer(map, type) {
       Object.keys(fieldMap).forEach(function (fieldName) {
         var field = fieldMap[fieldName];
 
-        if (field.args) {
+        if (_typeof(field.args) === 'object' && Array.isArray(field.args)) {
           var fieldArgTypes = field.args.map(function (arg) {
             return arg.type;
           });

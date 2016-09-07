@@ -48,9 +48,10 @@ message, nodes, source, positions, path, originalError) {
   }
 
   var _locations = undefined;
-  if (_source && _positions) {
+  var _source2 = _source; // seems here Flow need a const to resolve type.
+  if (_source2 && _positions) {
     _locations = _positions.map(function (pos) {
-      return (0, _language.getLocation)(_source, pos);
+      return (0, _language.getLocation)(_source2, pos);
     });
   }
 

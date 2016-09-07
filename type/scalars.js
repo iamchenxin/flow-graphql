@@ -7,7 +7,11 @@ exports.GraphQLID = exports.GraphQLBoolean = exports.GraphQLString = exports.Gra
 
 var _definition = require('./definition');
 
-var _language = require('../language');
+var _kinds = require('../language/kinds');
+
+var Kind = _interopRequireWildcard(_kinds);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 // As per the GraphQL Spec, Integers are only treated as valid when a valid
 // 32-bit signed integer, providing the broadest support across platforms.
@@ -41,7 +45,7 @@ var GraphQLInt = exports.GraphQLInt = new _definition.GraphQLScalarType({
   serialize: coerceInt,
   parseValue: coerceInt,
   parseLiteral: function parseLiteral(ast) {
-    if (ast.kind === _language.Kind.INT) {
+    if (ast.kind === Kind.INT) {
       var num = parseInt(ast.value, 10);
       if (num <= MAX_INT && num >= MIN_INT) {
         return num;
@@ -65,7 +69,7 @@ var GraphQLFloat = exports.GraphQLFloat = new _definition.GraphQLScalarType({
   serialize: coerceFloat,
   parseValue: coerceFloat,
   parseLiteral: function parseLiteral(ast) {
-    return ast.kind === _language.Kind.FLOAT || ast.kind === _language.Kind.INT ? parseFloat(ast.value) : null;
+    return ast.kind === Kind.FLOAT || ast.kind === Kind.INT ? parseFloat(ast.value) : null;
   }
 });
 
@@ -75,7 +79,7 @@ var GraphQLString = exports.GraphQLString = new _definition.GraphQLScalarType({
   serialize: String,
   parseValue: String,
   parseLiteral: function parseLiteral(ast) {
-    return ast.kind === _language.Kind.STRING ? ast.value : null;
+    return ast.kind === Kind.STRING ? ast.value : null;
   }
 });
 
@@ -85,7 +89,7 @@ var GraphQLBoolean = exports.GraphQLBoolean = new _definition.GraphQLScalarType(
   serialize: Boolean,
   parseValue: Boolean,
   parseLiteral: function parseLiteral(ast) {
-    return ast.kind === _language.Kind.BOOLEAN ? ast.value : null;
+    return ast.kind === Kind.BOOLEAN ? ast.value : null;
   }
 });
 
@@ -95,7 +99,7 @@ var GraphQLID = exports.GraphQLID = new _definition.GraphQLScalarType({
   serialize: String,
   parseValue: String,
   parseLiteral: function parseLiteral(ast) {
-    return ast.kind === _language.Kind.STRING || ast.kind === _language.Kind.INT ? ast.value : null;
+    return ast.kind === Kind.STRING || ast.kind === Kind.INT ? ast.value : null;
   }
 });
 //# sourceMappingURL=scalars.js.map

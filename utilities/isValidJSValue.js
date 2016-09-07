@@ -42,7 +42,7 @@ function isValidJSValue(value, type) {
   if (type instanceof _definition.GraphQLNonNull) {
     if ((0, _isNullish2.default)(value)) {
       if (type.ofType.name) {
-        return ['Expected "' + type.ofType.name + '!", found null.'];
+        return ['Expected "' + String(type.ofType.name) + '!", found null.'];
       }
       return ['Expected non-null value, found null.'];
     }

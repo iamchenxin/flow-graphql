@@ -34,7 +34,9 @@ var _isNullish2 = _interopRequireDefault(_isNullish);
 
 var _typeFromAST = require('../utilities/typeFromAST');
 
-var _language = require('../language');
+var _kinds = require('../language/kinds');
+
+var Kind = _interopRequireWildcard(_kinds);
 
 var _values = require('./values');
 
@@ -45,6 +47,8 @@ var _schema = require('../type/schema');
 var _introspection = require('../type/introspection');
 
 var _directives = require('../type/directives');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -93,6 +97,9 @@ function execute(schema, documentAST, rootValue, contextValue, variableValues, o
   (0, _invariant2.default)(schema, 'Must provide schema');
   (0, _invariant2.default)(schema instanceof _schema.GraphQLSchema, 'Schema must be an instance of GraphQLSchema. Also ensure that there are ' + 'not multiple versions of GraphQL installed in your node_modules directory.');
 
+  // Variables, if provided, must be an object.
+  (0, _invariant2.default)(!variableValues || (typeof variableValues === 'undefined' ? 'undefined' : _typeof(variableValues)) === 'object', 'Variables must be provided as an Object where each property is a ' + 'variable value. Perhaps look to see if an unparsed JSON string ' + 'was provided.');
+
   // If a valid context cannot be created due to incorrect arguments,
   // this will throw an error.
   var context = buildExecutionContext(schema, documentAST, rootValue, contextValue, variableValues, operationName);
@@ -132,7 +139,7 @@ function buildExecutionContext(schema, documentAST, rootValue, contextValue, raw
   var fragments = Object.create(null);
   documentAST.definitions.forEach(function (definition) {
     switch (definition.kind) {
-      case _language.Kind.OPERATION_DEFINITION:
+      case Kind.OPERATION_DEFINITION:
         if (!operationName && operation) {
           throw new _error.GraphQLError('Must provide operation name if query contains multiple operations.');
         }
@@ -140,7 +147,7 @@ function buildExecutionContext(schema, documentAST, rootValue, contextValue, raw
           operation = definition;
         }
         break;
-      case _language.Kind.FRAGMENT_DEFINITION:
+      case Kind.FRAGMENT_DEFINITION:
         fragments[definition.name.value] = definition;
         break;
       default:
@@ -276,7 +283,7 @@ function collectFields(exeContext, runtimeType, selectionSet, fields, visitedFra
   for (var i = 0; i < selectionSet.selections.length; i++) {
     var selection = selectionSet.selections[i];
     switch (selection.kind) {
-      case _language.Kind.FIELD:
+      case Kind.FIELD:
         if (!shouldIncludeNode(exeContext, selection.directives)) {
           continue;
         }
@@ -286,13 +293,13 @@ function collectFields(exeContext, runtimeType, selectionSet, fields, visitedFra
         }
         fields[_name].push(selection);
         break;
-      case _language.Kind.INLINE_FRAGMENT:
+      case Kind.INLINE_FRAGMENT:
         if (!shouldIncludeNode(exeContext, selection.directives) || !doesFragmentConditionMatch(exeContext, selection, runtimeType)) {
           continue;
         }
         collectFields(exeContext, runtimeType, selection.selectionSet, fields, visitedFragmentNames);
         break;
-      case _language.Kind.FRAGMENT_SPREAD:
+      case Kind.FRAGMENT_SPREAD:
         var fragName = selection.name.value;
         if (visitedFragmentNames[fragName] || !shouldIncludeNode(exeContext, selection.directives)) {
           continue;

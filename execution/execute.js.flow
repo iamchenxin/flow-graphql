@@ -15,7 +15,7 @@ import find from '../jsutils/find';
 import invariant from '../jsutils/invariant';
 import isNullish from '../jsutils/isNullish';
 import { typeFromAST } from '../utilities/typeFromAST';
-import { Kind } from '../language';
+import * as Kind from '../language/kinds';
 import { getVariableValues, getArgumentValues } from './values';
 import {
   GraphQLScalarType,
@@ -90,7 +90,7 @@ type ExecutionContext = {
   operation: OperationDefinition;
   variableValues: {[key: string]: mixed};
   errors: Array<GraphQLError>;
-}
+};
 
 /**
  * The result of execution. `data` is the result of executing the
@@ -100,7 +100,7 @@ type ExecutionContext = {
 type ExecutionResult = {
   data: ?Object;
   errors?: Array<GraphQLError>;
-}
+};
 
 /**
  * Implements the "Evaluating requests" section of the GraphQL specification.
@@ -123,6 +123,14 @@ export function execute(
     schema instanceof GraphQLSchema,
     'Schema must be an instance of GraphQLSchema. Also ensure that there are ' +
     'not multiple versions of GraphQL installed in your node_modules directory.'
+  );
+
+  // Variables, if provided, must be an object.
+  invariant(
+    !variableValues || typeof variableValues === 'object',
+    'Variables must be provided as an Object where each property is a ' +
+    'variable value. Perhaps look to see if an unparsed JSON string ' +
+    'was provided.'
   );
 
   // If a valid context cannot be created due to incorrect arguments,

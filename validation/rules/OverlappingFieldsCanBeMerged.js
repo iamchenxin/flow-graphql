@@ -512,7 +512,7 @@ function _collectFieldsAndFragmentNames(context, parentType, selectionSet, astAn
         break;
       case _kinds.INLINE_FRAGMENT:
         var typeCondition = selection.typeCondition;
-        var inlineFragmentType = typeCondition ? (0, _typeFromAST.typeFromAST)(context.getSchema(), selection.typeCondition) : parentType;
+        var inlineFragmentType = typeCondition ? (0, _typeFromAST.typeFromAST)(context.getSchema(), typeCondition) : parentType;
         _collectFieldsAndFragmentNames(context, inlineFragmentType, selection.selectionSet, astAndDefs, fragmentNames);
         break;
     }

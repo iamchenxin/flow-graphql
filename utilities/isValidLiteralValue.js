@@ -50,7 +50,7 @@ function isValidLiteralValue(type, valueAST) {
   if (type instanceof _definition.GraphQLNonNull) {
     if (!valueAST) {
       if (type.ofType.name) {
-        return ['Expected "' + type.ofType.name + '!", found null.'];
+        return ['Expected "' + String(type.ofType.name) + '!", found null.'];
       }
       return ['Expected non-null value, found null.'];
     }
