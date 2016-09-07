@@ -3,6 +3,12 @@
 Add flow-type outputs for [Graphql](https://github.com/graphql/graphql-js)
 
 # Changelog
+## v0.7.0 (origin Graphql v0.7.0)
+The Official Graphql upcoming release plan(So this flow-GraphQL was temporarily used until v0.8.0):
+v0.7.0: Introduce all latest improvements and changes to graphql-js, but no flow-types.
+v0.8.0-beta: Shortly after, a beta release will contain flow-types.
+v0.8.0: After some time for people to test and report any issues, a new non-beta release will contain flow types.
+
 ## v0.6.7 (Graphql v0.6.2)
   Update to Graphql v0.6.2.
 ## v0.6.6 (Graphql v0.6.1)
