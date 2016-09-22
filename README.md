@@ -1,6 +1,8 @@
 # flow-GraphQL.js
 
-Add flow-type outputs for [Graphql](https://github.com/graphql/graphql-js)
+Add flow-type outputs for [Graphql](https://github.com/graphql/graphql-js).<br/>
+For convenience, also make a modified `express-graphql`->[t-express-graphql](https://github.com/iamchenxin/t-express-graphql) (It require `flow-graphql` inner insteadof `graphql`).<br/>
+And, if you use Relay(Graphql relay server), there also has a Flow Typed [relayql](https://github.com/iamchenxin/relayql). But it is very different from [graphql-relay](https://github.com/graphql/graphql-relay-js). Because `graphql-relay` is not designed for a static Flow Type check.
 
 # Changelog
 ## v0.7.0 (origin Graphql v0.7.0,with PR#479, cause tag v0.7.0 has some wrong Flow typo).
