@@ -4,10 +4,11 @@ Add flow-type outputs for [Graphql](https://github.com/graphql/graphql-js)
 
 # Changelog
 ## v0.7.0 (origin Graphql v0.7.0,with PR#479, cause tag v0.7.0 has some wrong Flow typo).
-The Official Graphql upcoming release plan(So this flow-GraphQL was temporarily used until v0.8.0):
-v0.7.0: Introduce all latest improvements and changes to graphql-js, but no flow-types.
-v0.8.0-beta: Shortly after, a beta release will contain flow-types.
-v0.8.0: After some time for people to test and report any issues, a new non-beta release will contain flow types.
+The Official Graphql upcoming release plan(So this flow-GraphQL was temporarily used until v0.8.0):<br/>
+
+v0.7.0: Introduce all latest improvements and changes to graphql-js, but no flow-types.<br/>
+v0.8.0-beta: Shortly after, a beta release will contain flow-types.<br/>
+v0.8.0: After some time for people to test and report any issues, a new non-beta release will contain flow types.<br/>
 
 ## v0.6.7 (Graphql v0.6.2)
   Update to Graphql v0.6.2.
@@ -60,7 +61,7 @@ Note: Because in v0.61 ,in source code use a `any` type to force cast `TSource`.
  update Flow to 0.28
 
 ## v0.6.3 (Graphql v0.6.0)
-printSchema to this
+modified `printSchema(schema)` to `printSchema(schema, printStyle?: 'alphabet'|'hierarchy')`:<br/>
 ```
 type printStyle = 'alphabet' | 'hierarchy';
 export function printSchema(
@@ -75,3 +76,7 @@ export function printSchema(
   }
 }
 ```
+With `'hierarchy'` option( `printSchema(schema, 'hierarchy')` ), It will print schema as a leaf->root order.<br/>(The leaf Type is at the top, the root Type is at the bottom).<br/>
+
+And `'alphabet'|void` ( `printSchema(schema)` ) will call the GraphQL's original `printSchema`.<br/>
+The more detail `'hierarchy'` behaviour is in [unit test](https://github.com/iamchenxin/graphql-js/blob/8efc6f6a290798dd91d76570debe19deb3783df3/src/utilities/__tests__/schemaPrinter-test.js#L1593).
