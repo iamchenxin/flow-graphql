@@ -1,3 +1,6 @@
+# Note
+Graphql > v0.8.0 Has `.js.flow` output. just use this when you need old version Graphql. ( < V0.8.0).
+
 # flow-GraphQL.js
 
 Add flow-type outputs for [Graphql](https://github.com/graphql/graphql-js).<br/>
